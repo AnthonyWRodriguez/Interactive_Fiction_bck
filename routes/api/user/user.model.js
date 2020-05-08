@@ -15,6 +15,7 @@ module.exports = (db) =>{
         userRightEquip: "",
         userCurrentRoom: "",
         userRole: "",
+        userCommands: [],
         userActive: false
     }
 
@@ -42,6 +43,7 @@ module.exports = (db) =>{
                     userRightEquip: fist,
                     userCurrentRoom: room,
                     userRole: "player",
+                    userCommands: [],
                     userActive: true
                 }
             );
