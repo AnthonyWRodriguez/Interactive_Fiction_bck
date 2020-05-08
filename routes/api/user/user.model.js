@@ -43,7 +43,23 @@ module.exports = (db) =>{
                     userRightEquip: fist,
                     userCurrentRoom: room,
                     userRole: "player",
-                    userCommands: [],
+                    userCommands: [                
+                        `You start at the doors of a massive castle. 
+                        You look at your surroundings: A wide open space. 
+                        This castle has been constructed atop a cliff with no apparent way to enter or leave. 
+                        A maiden's shouts can be faintly heard inside. 
+                        You hear your name being called out.`,
+                        `${name}!!! Save me!!!`,
+                        `You try to force the door open, but it appears to be locked. 
+                        The path behind you is gone beacuse the wooden bridge collapsed. 
+                        You can go around the castle through the left or the right. `,
+                        `As you start to feel you gain control over your whole body after daydreaming about
+                        ... well... that's not important..., but after you regain body control, 
+                        you hear a strange voice saying "Welcome to my world, dear player."`,
+                        `"I'm the inner voice of your conscience. 
+                        During this adventure you're about to embark, 
+                        I will be the one in charge of guiding you. 
+                        In case you need any help, you may type in 'help'"`],
                     userActive: true
                 }
             );
@@ -242,6 +258,27 @@ module.exports = (db) =>{
                     return handler(err, null);
                 }
                 return handler(null, upd);
+            }
+        )
+    }
+
+    userModel.addCommand = (data, handler)=>{
+        var {email, commands} = data;
+        var query = {"userEmail": email};
+        var updateCommand = {
+            $set:{
+                "userCommands": commands
+            }
+        }
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd.data);
             }
         )
     }

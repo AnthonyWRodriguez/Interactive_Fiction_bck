@@ -94,6 +94,17 @@ function initUser (db) {
         });
     });
 
+    router.put('/addCommand', (req, res)=>{
+        var data = req.body;
+        userModel.addCommand(data, (err, add)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(add);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;
