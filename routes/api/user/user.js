@@ -105,6 +105,17 @@ function initUser (db) {
         });
     });
 
+    router.get('/allVerbs',(req, res)=>{
+        userModel.allVerbs((err, verbs)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(verbs);
+        }); 
+    });
+    
+
     return router;
 }
 module.exports = initUser;

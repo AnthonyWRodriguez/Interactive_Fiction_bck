@@ -5,6 +5,7 @@ module.exports = (db) =>{
 
     userCollection = db.collection("users");
     castleCollection = db.collection("castle");
+    verbCollection = db.collection("verbs");
 
     var userTemplate ={
         userName: "",
@@ -282,6 +283,11 @@ module.exports = (db) =>{
             }
         )
     }
+
+    userModel.allVerbs=(handler)=>{
+        verbCollection.find({}).toArray(handler);
+    };
+
 
     return userModel;
 }
