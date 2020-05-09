@@ -11,6 +11,9 @@ function initAdmin(db){
     var objectsRouter = require('./objects/objects')(db);
     router.use('/objects', objectsRouter);
 
+    var verbsRouter = require('./verbs/verbs')(db);
+    router.use('/verbs', verbsRouter);
+
     return router;
 }
 module.exports = initAdmin;
