@@ -7,7 +7,7 @@ module.exports = (db) =>{
 
     var verbTemplate = {
         name: "",
-        help: "",
+        objectHelp: "",
         associateVerb: ""
     }
 
@@ -22,7 +22,7 @@ module.exports = (db) =>{
             verbTemplate,
             {
                 name: name,
-                help: help,
+                objectHelp: help,
                 associateVerb: assoVerb
             }
         );
@@ -42,7 +42,7 @@ module.exports = (db) =>{
         var updateCommand = {
             $set:{
                 "name": nameNew,
-                "help": help,
+                "objectHelp": help,
                 "associateVerb": assoVerb
             }
         };
