@@ -27,8 +27,13 @@ function initUser (db) {
         });
     });
 
-    router.get('/currentRoom', (req, res)=>{
-        var data = req.body;
+    router.get('/currentRoom/:userID/:roomID', (req, res)=>{
+        var user = req.params.userID;
+        var room = req.params.roomID;
+        var data = {
+            "userID": user,
+            "roomID": room
+        };
         userModel.currentRoom(data, (err, room)=>{
             if(err){
                 console.log(err);
