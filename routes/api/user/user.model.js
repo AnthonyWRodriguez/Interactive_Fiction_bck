@@ -3,9 +3,10 @@ var ObjectID = require('mongodb').ObjectID;
 module.exports = (db) =>{
     userModel = {};
 
-    userCollection = db.collection("users");
-    castleCollection = db.collection("castle");
-    verbCollection = db.collection("verbs");
+    var userCollection = db.collection("users");
+    var castleCollection = db.collection("castle");
+    var verbCollection = db.collection("verbs");
+    var objectsEnvCollection = db.collection("objectsEnv");
 
     var userTemplate ={
         userName: "",
@@ -286,6 +287,21 @@ module.exports = (db) =>{
 
     userModel.allVerbs=(handler)=>{
         verbCollection.find({}).toArray(handler);
+    };
+    
+    userModel.getAllObjectsEnv = (data, handler)=>{
+        var name = data;
+        var query = {"objectName": name};
+        objectsEnvCollection.findOne(
+            query,
+            (err, obj)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, obj);
+            }
+        )
     };
 
 

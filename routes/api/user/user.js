@@ -119,6 +119,17 @@ function initUser (db) {
             return res.status(200).json(verbs);
         }); 
     });
+
+    router.get('/allObjectsEnv/:name', (req, res)=>{
+        var data = req.params.name;
+        userModel.getAllObjectsEnv(data, (err, objects)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(objects);
+        });
+    });
     
 
     return router;
