@@ -7,6 +7,7 @@ module.exports = (db) =>{
     var castleCollection = db.collection("castle");
     var verbCollection = db.collection("verbs");
     var objectsEnvCollection = db.collection("objectsEnv");
+    var objectsInvCollection = db.collection("objectsInv");
 
     var userTemplate ={
         userName: "",
@@ -304,6 +305,20 @@ module.exports = (db) =>{
         )
     };
 
+    userModel.getAllObjectsInv = (data, handler)=>{
+        var name = data;
+        var query = {"objectName": name};
+        objectsInvCollection.findOne(
+            query,
+            (err, obj)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, obj);
+            }
+        )
+    };
 
     return userModel;
 }

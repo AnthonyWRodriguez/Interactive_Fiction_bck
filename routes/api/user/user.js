@@ -130,6 +130,17 @@ function initUser (db) {
             return res.status(200).json(objects);
         });
     });
+
+    router.get('/allObjectsInv/:name', (req, res)=>{
+        var data = req.params.name;
+        userModel.getAllObjectsInv(data, (err, objects)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(objects);
+        });
+    });
     
 
     return router;
