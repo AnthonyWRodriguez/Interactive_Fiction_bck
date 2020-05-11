@@ -28,52 +28,82 @@ module.exports = (db) =>{
                 console.log(err);
                 return handler(err, null);
             }
-            var {name, email} = data;
-            var sword = "Steel Sword";
-            var healHerb = "Healing Herb";
-            var shield = "Iron Shield";
-            var fist = "Fist";
-            var room = new ObjectID("5eae5849ed6b166964fdbb2c");
-            var user = Object.assign(
-                {},
-                userTemplate,
-                {
-                    userName: name,
-                    userEmail: email,
-                    userProgress: res,
-                    userInventory: [sword, healHerb, healHerb, shield],
-                    userLeftEquip: fist,
-                    userRightEquip: fist,
-                    userCurrentRoom: room,
-                    userRole: "player",
-                    userCommands: [                
-                        `You start at the doors of a massive castle. 
-                        You look at your surroundings: A wide open space. 
-                        This castle has been constructed atop a cliff with no apparent way to enter or leave. 
-                        A maiden's shouts can be faintly heard inside. 
-                        You hear your name being called out.`,
-                        `${name}!!! Save me!!!`,
-                        `You try to force the door open, but it appears to be locked. 
-                        The path behind you is gone beacuse the wooden bridge collapsed. 
-                        You can go around the castle through the left or the right. `,
-                        `As you start to feel you gain control over your whole body after daydreaming about
-                        ... well... that's not important..., but after you regain body control, 
-                        you hear a strange voice saying "Welcome to my world, dear player."`,
-                        `"I'm the inner voice of your conscience. 
-                        During this adventure you're about to embark, 
-                        I will be the one in charge of guiding you. 
-                        In case you need any help, you may type in 'help'"`],
-                    userActive: true
-                }
-            );
-            userCollection.insertOne(user, (err, rslt)=>{
+            objectsInvCollection.find({}).toArray((err, objs)=>{
                 if(err){
                     console.log(err);
                     return handler(err, null);
                 }
-    
-                return handler(null, rslt.ops);
-            });
+                var sword = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Steel Sword"){
+                        sword = objs[y];
+                        break;
+                    }
+                }
+                var healHerb = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Healing Herb"){
+                        healHerb = objs[y];
+                        break;
+                    }
+                }
+                var shield = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Iron Shield"){
+                        shield = objs[y];
+                        break;
+                    }
+                }
+                var fist = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Fist"){
+                        fist = objs[y];
+                        break;
+                    }
+                }
+                var {name, email} = data;
+                var room = new ObjectID("5eae5849ed6b166964fdbb2c");
+                var user = Object.assign(
+                    {},
+                    userTemplate,
+                    {
+                        userName: name,
+                        userEmail: email,
+                        userProgress: res,
+                        userInventory: [sword, healHerb, healHerb, shield],
+                        userLeftEquip: fist,
+                        userRightEquip: fist,
+                        userCurrentRoom: room,
+                        userRole: "player",
+                        userCommands: [                
+                            `You start at the doors of a massive castle. 
+                            You look at your surroundings: A wide open space. 
+                            This castle has been constructed atop a cliff with no apparent way to enter or leave. 
+                            A maiden's shouts can be faintly heard inside. 
+                            You hear your name being called out.`,
+                            `${name}!!! Save me!!!`,
+                            `You try to force the door open, but it appears to be locked. 
+                            The path behind you is gone beacuse the wooden bridge collapsed. 
+                            You can go around the castle through the left or the right. `,
+                            `As you start to feel you gain control over your whole body after daydreaming about
+                            ... well... that's not important..., but after you regain body control, 
+                            you hear a strange voice saying "Welcome to my world, dear player."`,
+                            `"I'm the inner voice of your conscience. 
+                            During this adventure you're about to embark, 
+                            I will be the one in charge of guiding you. 
+                            In case you need any help, you may type in 'help'"`],
+                        userActive: true
+                    }
+                );
+                userCollection.insertOne(user, (err, rslt)=>{
+                    if(err){
+                        console.log(err);
+                        return handler(err, null);
+                    }
+        
+                    return handler(null, rslt.ops);
+                });
+            })
         });
     };
 
