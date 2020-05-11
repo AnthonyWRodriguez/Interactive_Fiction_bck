@@ -4,6 +4,8 @@ module.exports = (db) =>{
     castleModel = {};
     var castleCollection = db.collection("castle");
     var usersCollection = db.collection("users");
+    var objectsEnvCollection = db.collection("objectsEnv");
+    var objectsInvCollection = db.collection("objectsInv");
 
     var roomTemplate = {
         roomName: "",
@@ -86,7 +88,7 @@ module.exports = (db) =>{
                         "userProgress.$[r].roomLeft": left,
                         "userProgress.$[r].roomRight": right,
                         "userProgress.$[r].roomForward": forward,
-                        "userProgress.$[r].roomBackward": backward
+                        "userProgress.$[r].roomBackward": backward,
                     }
                 };
                 var filter = {
@@ -115,44 +117,68 @@ module.exports = (db) =>{
 
     castleModel.addObjectInv = (data, handler)=>{
         var {idRoom, nameObj} = data;
-        var query = {"_id": new ObjectID(idRoom)};
-        var updateCommand = {
-            $push:{
-                "roomObjectsInv": nameObj
-            }
-        };
-        castleCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
+        objectsInvCollection.find({}).toArray((err, objects)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
+            }else{
+                var x = 0;
+                for(x=0;x<objects.length;x++){
+                    if(objects[x].objectName===nameObj){
+                        var query = {"_id": new ObjectID(idRoom)};
+                        var updateCommand = {
+                            $push:{
+                                "roomObjectsInv": objects[x]
+                            }
+                        };
+                        castleCollection.findOneAndUpdate(
+                            query,
+                            updateCommand,
+                            (err, upd)=>{
+                                if(err){
+                                    console.log(err);
+                                    return handler(err, null);
+                                }
+                                return handler(null, {"msg":"The item was successfully added"});
+                            }
+                        )
+                    }
                 }
-                return handler(null, upd);
             }
-        )
+        })
     }
 
     castleModel.addObjectEnv = (data, handler)=>{
         var {idRoom, nameObj} = data;
-        var query = {"_id": new ObjectID(idRoom)};
-        var updateCommand = {
-            $push:{
-                "roomObjectsEnv": nameObj
-            }
-        };
-        castleCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
+        objectsEnvCollection.find({}).toArray((err, objects)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
+            }else{
+                var x = 0;
+                for(x=0;x<objects.length;x++){
+                    if(objects[x].objectName===nameObj){
+                        var query = {"_id": new ObjectID(idRoom)};
+                        var updateCommand = {
+                            $push:{
+                                "roomObjectsEnv": objects[x]
+                            }
+                        };
+                        castleCollection.findOneAndUpdate(
+                            query,
+                            updateCommand,
+                            (err, upd)=>{
+                                if(err){
+                                    console.log(err);
+                                    return handler(err, null);
+                                }
+                                return handler(null, {"msg":"The item was successfully added"});
+                            }
+                        )
+                    }
                 }
-                return handler(null, upd);
             }
-        )
+        })
     }
 
     return castleModel;
