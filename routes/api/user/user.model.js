@@ -144,72 +144,26 @@ module.exports = (db) =>{
         )
     }
 
-    userModel.dropObject = (data, handler)=>{
-        var {id, inv, obj, duplicate, dir, room} = data;
-        var query = {"_id": new ObjectID(id)};
-        var updateCommand = "";
-        if(duplicate==="true"){
-            updateCommand = {
-                $set:{
-                    "userInventory": inv
-                },
-                $push:{
-                    "userProgress.$[r].roomObjectsInv": obj
-                }
-            };    
-        }else{
-            if(dir==="left"){
-                updateCommand = {
-                    $set:{
-                        "userInventory": inv,
-                        "userLeftEquip": "Fist"
-                    },
-                    $push:{
-                        "userProgress.$[r].roomObjectsInv": obj
-                    }
-                };
-            }else{
-                updateCommand = {
-                    $set:{
-                        "userInventory": inv,
-                        "userRightEquip": "Fist"
-                    },
-                    $push:{
-                        "userProgress.$[r].roomObjectsInv": obj
-                    }
-                };
-            } 
-        }
-        var filter = {
-            arrayFilters: [
-                {
-                    "r._id":new ObjectID(room)
-                }
-            ],
-            multi: true,
-        };
-        userCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            filter,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
-                }
-                return handler(null, upd);
-            }
-        )
-    };
+
+
+
+
+
+
 
     userModel.grabObject = (data, handler)=>{
         var {object, currentRName, uName, InvObjs} = data;
         var Objs = InvObjs;
+        var b = 0;
         for(var a=0;a<Objs.length;a++){
             if(Objs[a].objectName===object.objectName){
                 Objs.splice(a,1);
-                break;
+                b++;
             }
+        }
+        if(b>1){
+            Objs.push(object);
+            b--;
         }
         var query = {"userName": uName}
         var updateCommand = {
@@ -241,6 +195,50 @@ module.exports = (db) =>{
             }
         )
     };
+
+
+    userModel.dropObject = (data, handler)=>{
+        var {object, currentRName, uName, InvObjs} = data;
+        var query = {"userName": uName};
+        var Objs = InvObjs;
+        var b = 0;
+        for(var a=0;a<Objs.length;a++){
+            if(Objs[a].objectName===object.objectName){
+                b=a;
+                break;
+            }
+        }
+        Objs.splice(b,1);
+        var updateCommand = {
+            $push:{
+                "userProgress.$[r].roomObjectsInv": object
+            },
+            $set:{
+                "userInventory": Objs
+            }
+        };
+        var filter = {
+            arrayFilters: [
+                {
+                    "r.roomName": currentRName
+                }
+            ],
+            multi: true,
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            filter,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, Objs);
+            }
+        )
+    };
+
 
     userModel.equipObject = (data, handler) =>{
         var {id, nameObj, direction} = data;

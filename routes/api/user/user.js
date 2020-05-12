@@ -44,13 +44,7 @@ function initUser (db) {
     });
 
     router.put('/drop', (req, res)=>{
-        var a = req.body.inventory;
-        a = a.replace(/'/g, '"');
-        a = JSON.parse(a);
-        var data = {
-            "inv": a,
-            ...req.body
-        }
+        var data = req.body;
         userModel.dropObject(data, (err, drop)=>{
             if(err){
                 console.log(err);
