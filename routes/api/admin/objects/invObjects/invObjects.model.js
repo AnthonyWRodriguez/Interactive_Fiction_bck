@@ -10,7 +10,7 @@ module.exports = (db) =>{
         objectDesc: "",//examine item
         objectType: "",//MAG, ATK, HEAL, DEF, KEY(as in important), etc
         objectValue: "",//Attack output, heal output, defense output, etc
-        objectWeight: "",//only important in weapons
+        objectWeight: "",//only important in weapons/shields
         objectUse: "",
         objectEquip: "",
         objectUnequip: "",

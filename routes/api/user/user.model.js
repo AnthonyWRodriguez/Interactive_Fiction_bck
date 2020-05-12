@@ -145,154 +145,19 @@ module.exports = (db) =>{
     }
 
     userModel.dropObject = (data, handler)=>{
-        var {id, inv, obj, duplicate, dir, room} = data;
-        var query = {"_id": new ObjectID(id)};
-        var updateCommand = "";
-        if(duplicate==="true"){
-            updateCommand = {
-                $set:{
-                    "userInventory": inv
-                },
-                $push:{
-                    "userProgress.$[r].roomObjectsInv": obj
-                }
-            };    
-        }else{
-            if(dir==="left"){
-                updateCommand = {
-                    $set:{
-                        "userInventory": inv,
-                        "userLeftEquip": "Fist"
-                    },
-                    $push:{
-                        "userProgress.$[r].roomObjectsInv": obj
-                    }
-                };
-            }else{
-                updateCommand = {
-                    $set:{
-                        "userInventory": inv,
-                        "userRightEquip": "Fist"
-                    },
-                    $push:{
-                        "userProgress.$[r].roomObjectsInv": obj
-                    }
-                };
-            } 
-        }
-        var filter = {
-            arrayFilters: [
-                {
-                    "r._id":new ObjectID(room)
-                }
-            ],
-            multi: true,
-        };
-        userCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            filter,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
-                }
-                return handler(null, upd);
-            }
-        )
+
     };
 
     userModel.grabObject = (data, handler)=>{
-        var {idU, idR, obj, objs} = data;
-        var query = {"_id":new ObjectID(idU)};
-        var updateCommand = {
-            $push:{
-                "userInventory": obj
-            },
-            $set:{
-                "userProgress.$[r].roomObjectsInv": objs
-            }
-        };
-        var filter = {
-            arrayFilters: [
-                {
-                    "r._id":new ObjectID(idR)
-                }
-            ],
-            multi: true,
-        };
-        userCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            filter,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
-                }
-                return handler(null, upd);
-            }
-        )
+
     };
 
     userModel.equipObject = (data, handler) =>{
-        var {id, nameObj, direction} = data;
-        var query = {"_id": new ObjectID(id)};
-        var updateCommand="";
-        if(direction==="left"){
-            updateCommand = {
-                $set:{
-                    "userLeftEquip": nameObj
-                }
-            }    
-        }else{
-            updateCommand = {
-                $set:{
-                    "userRightEquip": nameObj
-                }
-            }  
-        }
-        userCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
-                }
-                return handler(null, upd);
-            }
-        )
+
     };
 
     userModel.unequipObject = (data, handler)=>{
-        var{id, direction} = data;
-        var query = {"_id": new ObjectID(id)};
-        var updateCommand="";
-        if(direction==="left"){
-            updateCommand = {
-                $set:{
-                    "userLeftEquip": "Fist"
-                }
-            }    
-        }else{
-            updateCommand = {
-                $set:{
-                    "userRightEquip": "Fist"
-                }
-            }  
-        }
-        userCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
-                }
-                return handler(null, upd);
-            }
-        )
+
     }
 
     userModel.addCommand = (data, handler)=>{
