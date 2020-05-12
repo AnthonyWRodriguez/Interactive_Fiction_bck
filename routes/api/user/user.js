@@ -61,13 +61,7 @@ function initUser (db) {
     });
 
     router.put('/grab', (req, res)=>{
-        var a = req.body.roomObjects;
-        a = a.replace(/'/g, '"');
-        a = JSON.parse(a);
-        var data = {
-            "objs": a,
-            ...req.body
-        }
+        var data = req.body;
         userModel.grabObject(data, (err, drop)=>{
             if(err){
                 console.log(err);

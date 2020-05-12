@@ -70,7 +70,7 @@ module.exports = (db) =>{
                         userName: name,
                         userEmail: email,
                         userProgress: res,
-                        userInventory: [sword, healHerb, healHerb, shield],
+                        userInventory: [sword, healHerb, shield],
                         userLeftEquip: fist,
                         userRightEquip: fist,
                         userCurrentRoom: room,
@@ -102,7 +102,7 @@ module.exports = (db) =>{
                     }
         
                     return handler(null, rslt.ops);
-                });
+                })
             })
         });
     };
@@ -145,19 +145,161 @@ module.exports = (db) =>{
     }
 
     userModel.dropObject = (data, handler)=>{
-
+        var {id, inv, obj, duplicate, dir, room} = data;
+        var query = {"_id": new ObjectID(id)};
+        var updateCommand = "";
+        if(duplicate==="true"){
+            updateCommand = {
+                $set:{
+                    "userInventory": inv
+                },
+                $push:{
+                    "userProgress.$[r].roomObjectsInv": obj
+                }
+            };    
+        }else{
+            if(dir==="left"){
+                updateCommand = {
+                    $set:{
+                        "userInventory": inv,
+                        "userLeftEquip": "Fist"
+                    },
+                    $push:{
+                        "userProgress.$[r].roomObjectsInv": obj
+                    }
+                };
+            }else{
+                updateCommand = {
+                    $set:{
+                        "userInventory": inv,
+                        "userRightEquip": "Fist"
+                    },
+                    $push:{
+                        "userProgress.$[r].roomObjectsInv": obj
+                    }
+                };
+            } 
+        }
+        var filter = {
+            arrayFilters: [
+                {
+                    "r._id":new ObjectID(room)
+                }
+            ],
+            multi: true,
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            filter,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
     };
 
     userModel.grabObject = (data, handler)=>{
-
+        var {object, currentRName, uName, InvObjs} = data;
+        var Objs = InvObjs;
+        for(var a=0;a<Objs.length;a++){
+            if(Objs[a].objectName===object.objectName){
+                Objs.splice(a,1);
+                break;
+            }
+        }
+        var query = {"userName": uName}
+        var updateCommand = {
+            $push:{
+                "userInventory": object
+            },
+            $set:{
+                "userProgress.$[r].roomObjectsInv": Objs
+            },
+        };
+        var filter = {
+            arrayFilters: [
+                {
+                    "r.roomName": currentRName
+                }
+            ],
+            multi: true,
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            filter,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, Objs);
+            }
+        )
     };
 
     userModel.equipObject = (data, handler) =>{
-
+        var {id, nameObj, direction} = data;
+        var query = {"_id": new ObjectID(id)};
+        var updateCommand="";
+        if(direction==="left"){
+            updateCommand = {
+                $set:{
+                    "userLeftEquip": nameObj
+                }
+            }    
+        }else{
+            updateCommand = {
+                $set:{
+                    "userRightEquip": nameObj
+                }
+            }  
+        }
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
     };
 
     userModel.unequipObject = (data, handler)=>{
-
+        var{id, direction} = data;
+        var query = {"_id": new ObjectID(id)};
+        var updateCommand="";
+        if(direction==="left"){
+            updateCommand = {
+                $set:{
+                    "userLeftEquip": "Fist"
+                }
+            }    
+        }else{
+            updateCommand = {
+                $set:{
+                    "userRightEquip": "Fist"
+                }
+            }  
+        }
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
     }
 
     userModel.addCommand = (data, handler)=>{
