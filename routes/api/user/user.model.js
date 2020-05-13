@@ -394,16 +394,6 @@ module.exports = (db) =>{
         )
     }
 
-
-
-
-
-
-
-
-
-
-
     userModel.allVerbs=(handler)=>{
         verbCollection.find({}).toArray(handler);
     };

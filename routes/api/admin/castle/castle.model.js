@@ -13,9 +13,13 @@ module.exports = (db) =>{
         roomEnterEnemy: "",
         roomLook: "",
         roomLeft: "",
+        roomLeftBool: false,
         roomRight: "",
+        roomRightBool: false,
         roomForward: "",
+        roomForwardBool: false,
         roomBackward: "",
+        roomBackwardBool: false,
         roomObjectsInv: [],
         roomObjectsEnv: [],
         roomEnemy: "",
@@ -28,7 +32,23 @@ module.exports = (db) =>{
     };
 
     castleModel.newRoom = (data, handler) =>{
-        var {name, enter, look, left, right, forward, backward, } = data;
+        var {name, enter, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool } = data;
+        var leftB = Boolean(false);
+        var rightB = Boolean(false);
+        var forwardB = Boolean(false);
+        var backwardB = Boolean(false);
+        if(leftBool==="true"){
+            leftB = Boolean(true);
+        }
+        if(rightBool==="true"){
+            rightB = Boolean(true);
+        };
+        if(forwardBool==="true"){
+            forwardB = Boolean(true);
+        };
+        if(backwardBool==="true"){
+            backwardB = Boolean(true);
+        };
         var room = Object.assign(
             {},
             roomTemplate,
@@ -38,9 +58,13 @@ module.exports = (db) =>{
                 roomEnterEnemy: "",
                 roomLook: look,
                 roomLeft: left,
+                roomLeftBool: leftB,
                 roomRight: right,
+                roomRightBool: rightB,
                 roomForward: forward,
+                roomForwardBool: forwardB,
                 roomBackward: backward,
+                roomBackwardBool: backwardB,
                 roomObjectsInv: [],
                 roomObjectsEnv: [],
                 roomEnemy: "",
@@ -58,7 +82,23 @@ module.exports = (db) =>{
     };
 
     castleModel.updateRoom = (data, handler) =>{
-        var {_id, name, enter, look, left, right, forward, backward} = data;
+        var {_id, name, enter, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool} = data;
+        var leftB = Boolean(false);
+        var rightB = Boolean(false);
+        var forwardB = Boolean(false);
+        var backwardB = Boolean(false);
+        if(leftBool==="true"){
+            leftB = Boolean(true);
+        }
+        if(rightBool==="true"){
+            rightB = Boolean(true);
+        };
+        if(forwardBool==="true"){
+            forwardB = Boolean(true);
+        };
+        if(backwardBool==="true"){
+            backwardB = Boolean(true);
+        };
         var query = {"_id": new ObjectID(_id)};
         var updateCommand = {
             "$set":{
@@ -69,6 +109,10 @@ module.exports = (db) =>{
                 roomRight: right,
                 roomForward: forward,
                 roomBackward: backward,
+                roomLeftBool: leftB,
+                roomRightBool: rightB,
+                roomForwardBool: forwardB,
+                roomBackwardBool: backwardB,
             }
         };
         castleCollection.updateOne(
@@ -89,6 +133,10 @@ module.exports = (db) =>{
                         "userProgress.$[r].roomRight": right,
                         "userProgress.$[r].roomForward": forward,
                         "userProgress.$[r].roomBackward": backward,
+                        "userProgress.$[r].roomLeftBool": leftB,
+                        "userProgress.$[r].roomRightBool": rightB,
+                        "userProgress.$[r].roomForwardBool": forwardB,
+                        "userProgress.$[r].roomBackwardBool": backwardB,
                     }
                 };
                 var filter = {

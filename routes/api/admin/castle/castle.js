@@ -29,8 +29,28 @@ function initCastle (db) {
 
     router.put('/updateRoom', (req, res)=>{
         var id = req.body.id;
+        var leftB = false;
+        var rightB = false;
+        var forwardB = false;
+        var backwardB = false;
+        if(req.body.leftB==="true"){
+            leftB = true;
+        }
+        if(req.body.rightB==="true"){
+            rightB = true;
+        };
+        if(req.body.forwardB==="true"){
+            forwardB = true;
+        };
+        if(req.body.backwardB==="true"){
+            backwardB = true;
+        };
         var data = {
             "_id":id,
+            "leftBool": leftB,
+            "rightBool": rightB,
+            "forwardBool": forwardB,
+            "backwardBool": backwardB,
             ...req.body
         };
         castleModel.updateRoom(data, (err, upd)=>{
