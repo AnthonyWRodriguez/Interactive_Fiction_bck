@@ -96,7 +96,7 @@ module.exports = (db) =>{
                             I will be the one in charge of guiding you. 
                             In case you need any help, you may type in 'help'"`],
                         userBaseHealth: 10,
-                        userRealHealth: 10,
+                        userRealHealth: 0,
                         userAtk: 2,
                         userActive: true
                     }
@@ -149,13 +149,6 @@ module.exports = (db) =>{
             }
         )
     }
-
-
-
-
-
-
-
 
     userModel.grabObject = (data, handler)=>{
         var {object, currentRName, uName, InvObjs} = data;
@@ -246,6 +239,13 @@ module.exports = (db) =>{
     };
 
 
+
+
+
+
+
+
+
     userModel.equipObject = (data, handler) =>{
         var {id, nameObj, direction} = data;
         var query = {"_id": new ObjectID(id)};
@@ -327,6 +327,16 @@ module.exports = (db) =>{
         )
     }
 
+
+
+
+
+
+
+
+
+
+
     userModel.allVerbs=(handler)=>{
         verbCollection.find({}).toArray(handler);
     };
@@ -360,6 +370,93 @@ module.exports = (db) =>{
             }
         )
     };
+
+    userModel.diedAndStartedOver = (data, handler)=>{
+        castleCollection.find({}).toArray((err, res)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
+            }
+            objectsInvCollection.find({}).toArray((err, objs)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                var sword = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Steel Sword"){
+                        sword = objs[y];
+                        break;
+                    }
+                }
+                var healHerb = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Healing Herb"){
+                        healHerb = objs[y];
+                        break;
+                    }
+                }
+                var shield = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Iron Shield"){
+                        shield = objs[y];
+                        break;
+                    }
+                }
+                var fist = "";
+                for (y=0;y<objs.length;y++){
+                    if(objs[y].objectName==="Fist"){
+                        fist = objs[y];
+                        break;
+                    }
+                }
+                var {name} = data;
+                var room = new ObjectID("5eae5849ed6b166964fdbb2c");
+                var query = {"userName": name};
+                var updateCommand = {
+                    $set:{
+                        userProgress: res,
+                        userInventory: [sword, healHerb, shield],
+                        userLeftEquip: fist,
+                        userRightEquip: fist,
+                        userCurrentRoom: room,
+                        userCommands: [                
+                            `You start at the doors of a massive castle. 
+                            You look at your surroundings: A wide open space. 
+                            This castle has been constructed atop a cliff with no apparent way to enter or leave. 
+                            A maiden's shouts can be faintly heard inside. 
+                            You hear your name being called out.`,
+                            `${name}!!! Save me!!!`,
+                            `You try to force the door open, but it appears to be locked. 
+                            The path behind you is gone beacuse the wooden bridge collapsed. 
+                            You can go around the castle through the left or the right. `,
+                            `As you start to feel you gain control over your whole body after daydreaming about
+                            ... well... that's not important..., but after you regain body control, 
+                            you hear a strange voice saying "Welcome to my world, dear player."`,
+                            `"I'm the inner voice of your conscience. 
+                            During this adventure you're about to embark, 
+                            I will be the one in charge of guiding you. 
+                            In case you need any help, you may type in 'help'"`],
+                        userBaseHealth: 10,
+                        userRealHealth: 10,
+                        userAtk: 2,
+                    }
+                }
+                userCollection.findOneAndUpdate(
+                    query,
+                    updateCommand,
+                    (err, upd)=>{
+                        if(err){
+                            console.log(err);
+                            return handler(err, null);
+                        }
+                        return handler(null, upd);
+                    }
+                )
+            });
+        });
+    }
+
 
     return userModel;
 }

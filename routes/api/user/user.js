@@ -129,6 +129,17 @@ function initUser (db) {
             return res.status(200).json(objects);
         });
     });
+
+    router.put('/death', (req, res)=>{
+        var data = req.body;
+        userModel.diedAndStartedOver(data, (err, upd)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json({"msg":"Welcome back to life"});
+        })
+    })
     
 
     return router;
