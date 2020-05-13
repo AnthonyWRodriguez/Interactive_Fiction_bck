@@ -19,6 +19,9 @@ module.exports = (db) =>{
         userCurrentRoom: "",
         userRole: "",
         userCommands: [],
+        userBaseHealth: 0,
+        userRealHealth: 0,
+        userAtk: 0,
         userActive: false
     }
 
@@ -92,6 +95,9 @@ module.exports = (db) =>{
                             During this adventure you're about to embark, 
                             I will be the one in charge of guiding you. 
                             In case you need any help, you may type in 'help'"`],
+                        userBaseHealth: 10,
+                        userRealHealth: 10,
+                        userAtk: 2,
                         userActive: true
                     }
                 );
