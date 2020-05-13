@@ -65,7 +65,7 @@ module.exports = (db) =>{
                     }
                 }
                 var {name, email} = data;
-                var room = new ObjectID("5eae5849ed6b166964fdbb2c");
+                var room = new ObjectID("5ebb610f6bc9ce5a28d03b99");
                 var user = Object.assign(
                     {},
                     userTemplate,
@@ -156,14 +156,11 @@ module.exports = (db) =>{
         var b = 0;
         for(var a=0;a<Objs.length;a++){
             if(Objs[a].objectName===object.objectName){
-                Objs.splice(a,1);
-                b++;
+                b=a;
+                break;
             }
         }
-        if(b>1){
-            Objs.push(object);
-            b--;
-        }
+        Objs.splice(b,1);
         var query = {"userName": uName}
         var updateCommand = {
             $push:{
@@ -247,21 +244,44 @@ module.exports = (db) =>{
 
 
     userModel.equipObject = (data, handler) =>{
-        var {id, nameObj, direction} = data;
-        var query = {"_id": new ObjectID(id)};
-        var updateCommand="";
-        if(direction==="left"){
-            updateCommand = {
-                $set:{
-                    "userLeftEquip": nameObj
-                }
+        var {object, uName, leftE, rightE, InvObjs} = data;
+        var Objs = InvObjs;
+        var b = 0;
+        for(var a=0;a<Objs.length;a++){
+            if(Objs[a].objectName===object.objectName){
+                b++;
+                break;
+            }
+        }
+        var query = {"userName": uName};
+        var updateCommand = {};
+        var msg = "";
+        if(object.objectName===leftE && object.objectName===rightE){
+            msg = "You already have equipped two of those";
+            return handler(null, {"msg":msg});
+        }
+        if(b>0){
+            if(object.objectType!=="HEAL"){
+                if(object.objectName===leftE){
+                    msg =`Equipped ${object.objectName} in your right hand`;
+                    updateCommand = {
+                        $set:{
+                            "userRightEquip": object
+                        }
+                    };
+                }else{
+                    msg =`Equipped ${object.objectName} in your left hand`;
+                    updateCommand = {
+                        $set:{
+                            "userLeftEquip": object
+                        }
+                    };
+                }    
+            }else{
+                return handler(null, {"A":"A"});
             }    
         }else{
-            updateCommand = {
-                $set:{
-                    "userRightEquip": nameObj
-                }
-            }  
+            return handler(null, {"msg":"That item is not in your inventory"});
         }
         userCollection.findOneAndUpdate(
             query,
@@ -271,7 +291,7 @@ module.exports = (db) =>{
                     console.log(err);
                     return handler(err, null);
                 }
-                return handler(null, upd);
+                return handler(null, {"msg":msg});
             }
         )
     };
@@ -411,7 +431,7 @@ module.exports = (db) =>{
                     }
                 }
                 var {name} = data;
-                var room = new ObjectID("5eae5849ed6b166964fdbb2c");
+                var room = new ObjectID("5ebb610f6bc9ce5a28d03b99");
                 var query = {"userName": name};
                 var updateCommand = {
                     $set:{
