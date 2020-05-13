@@ -96,7 +96,7 @@ module.exports = (db) =>{
                             I will be the one in charge of guiding you. 
                             In case you need any help, you may type in 'help'"`],
                         userBaseHealth: 10,
-                        userRealHealth: 0,
+                        userRealHealth: 10,
                         userAtk: 2,
                         userActive: true
                     }
