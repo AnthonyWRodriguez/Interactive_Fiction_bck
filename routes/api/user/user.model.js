@@ -244,7 +244,7 @@ module.exports = (db) =>{
 
 
     userModel.equipObject = (data, handler) =>{
-        var {object, uName, leftE, rightE, InvObjs} = data;
+        var {object, uName, leftE, rightE, InvObjs, dir} = data;
         var Objs = InvObjs;
         var b = 0;
         for(var a=0;a<Objs.length;a++){
@@ -260,23 +260,37 @@ module.exports = (db) =>{
             msg = "You already have equipped two of those";
             return handler(null, {"msg":msg});
         }
-        if(b>0){
+        if(b>=1){
             if(object.objectType!=="HEAL"){
-                if(object.objectName===leftE){
-                    msg =`Equipped ${object.objectName} in your right hand`;
-                    updateCommand = {
-                        $set:{
-                            "userRightEquip": object
+                if(dir==="left"){
+                    if(object.objectName!==leftE){
+                        if( b>1 || object.objectName!==rightE){
+                            updateCommand={
+                                $set:{
+                                    "userLeftEquip": object
+                                }
+                            }
+                        }else{
+                            return handler(null, {"msg":"That item is already equipped in your right hand"});
                         }
-                    };
+                    }else{
+                        return handler(null, {"msg":"That item is already equipped in your left hand"});
+                    }
                 }else{
-                    msg =`Equipped ${object.objectName} in your left hand`;
-                    updateCommand = {
-                        $set:{
-                            "userLeftEquip": object
+                    if(object.objectName!==rightE){
+                        if( b>1 || object.objectName!==leftE){
+                            updateCommand={
+                                $set:{
+                                    "userRightEquip": object
+                                }
+                            }
+                        }else{
+                            return handler(null, {"msg":"That item is already equipped in your left hand"});
                         }
-                    };
-                }    
+                    }else{
+                        return handler(null, {"msg":"That item is already equipped in your right hand"});
+                    }
+                }
             }else{
                 return handler(null, {"A":"A"});
             }    
@@ -296,6 +310,13 @@ module.exports = (db) =>{
         )
     };
 
+
+
+
+
+
+
+    
     userModel.unequipObject = (data, handler)=>{
         var{id, direction} = data;
         var query = {"_id": new ObjectID(id)};
