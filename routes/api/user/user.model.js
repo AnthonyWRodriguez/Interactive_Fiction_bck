@@ -236,13 +236,6 @@ module.exports = (db) =>{
     };
 
 
-
-
-
-
-
-
-
     userModel.equipObject = (data, handler) =>{
         var {object, uName, leftE, rightE, InvObjs, dir} = data;
         var Objs = InvObjs;
@@ -261,7 +254,7 @@ module.exports = (db) =>{
             return handler(null, {"msg":msg});
         }
         if(b>=1){
-            if(object.objectType!=="HEAL"){
+            if(object.objectType!=="HEAL" && object.objectType!=="UPGR"){
                 if(dir==="left"){
                     if(object.objectName!==leftE){
                         if( b>1 || object.objectName!==rightE){
@@ -318,33 +311,66 @@ module.exports = (db) =>{
 
     
     userModel.unequipObject = (data, handler)=>{
-        var{id, direction} = data;
-        var query = {"_id": new ObjectID(id)};
-        var updateCommand="";
-        if(direction==="left"){
-            updateCommand = {
-                $set:{
-                    "userLeftEquip": "Fist"
-                }
-            }    
-        }else{
-            updateCommand = {
-                $set:{
-                    "userRightEquip": "Fist"
-                }
-            }  
-        }
-        userCollection.findOneAndUpdate(
-            query,
-            updateCommand,
-            (err, upd)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
-                }
-                return handler(null, upd);
+        var {object, uName, leftE, rightE, dir} = data;
+        objectsInvCollection.find({}).toArray((err, objs)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
             }
-        )
+            var fist = {};
+            for(var a=0;a<objs.length;a++){
+                if(objs[a].objectName==="Fist"){
+                    fist = objs[a];
+                    break;
+                }
+            }
+            var msg = "";
+            var query = {"userName": uName};
+            var updateCommand={};
+            if(dir==="left"){
+                msg = `Unequipped ${object.objectName} from left hand`;
+                updateCommand = {
+                    $set:{
+                        userLeftEquip: fist
+                    }
+                }
+            }else if(dir==="right"){
+                msg = `Unequipped ${object.objectName} from right hand`;
+                updateCommand = {
+                    $set:{
+                        userRightEquip: fist
+                    }
+                }
+            }else{
+                if(object===leftE){
+                    msg = `Unequipped ${object.objectName} from left hand`;
+                    updateCommand = {
+                        $set:{
+                            userLeftEquip: fist
+                        }
+                    }
+                }
+                if(object===rightE){
+                    msg = `Unequipped ${object.objectName} from right hand`;
+                    updateCommand = {
+                        $set:{
+                            userRightEquip: fist
+                        }
+                    }
+                }
+            }
+            userCollection.findOneAndUpdate(
+                query,
+                updateCommand,
+                (err, upd)=>{
+                    if(err){
+                        console.log(err);
+                        return handler(err, null);
+                    }
+                    return handler(null, {"msg":msg});
+                }
+            )
+        });
     }
 
     userModel.addCommand = (data, handler)=>{
