@@ -6,7 +6,7 @@ module.exports = (db) =>{
     var usersCollection = db.collection("users");
     var objectsEnvCollection = db.collection("objectsEnv");
     var objectsInvCollection = db.collection("objectsInv");
-    var enemyCollection = db.collection("enemies");
+    var enemiesCollection = db.collection("enemies");
 
     var roomTemplate = {
         roomName: "",
@@ -88,96 +88,109 @@ module.exports = (db) =>{
 
     castleModel.updateRoom = (data, handler) =>{
         var {_id, name, enter, enterEnemy, enemyName, enemyAlive, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool} = data;
-        var leftB = Boolean(false);
-        var rightB = Boolean(false);
-        var forwardB = Boolean(false);
-        var backwardB = Boolean(false);
-        var enemyLive = Boolean(false);
-        if(leftBool==="true"){
-            leftB = Boolean(true);
-        }
-        if(rightBool==="true"){
-            rightB = Boolean(true);
-        };
-        if(forwardBool==="true"){
-            forwardB = Boolean(true);
-        };
-        if(backwardBool==="true"){
-            backwardB = Boolean(true);
-        };
-        if(enemyAlive==="true"){
-            enemyLive = Boolean(true);
-        }
-        var query = {"_id": new ObjectID(_id)};
-        var updateCommand = {
-            "$set":{
-                roomName: name,
-                roomEnter: enter,
-                roomEnterEnemy: enterEnemy,
-                roomLook: look,
-                roomLeft: left,
-                roomRight: right,
-                roomForward: forward,
-                roomBackward: backward,
-                roomLeftBool: leftB,
-                roomRightBool: rightB,
-                roomForwardBool: forwardB,
-                roomBackwardBool: backwardB,
-                roomEnemy: "",
-                roomEnemyHealth: "",
-                roomEnemyAlive: enemyLive,
+        enemiesCollection.find({}).toArray((err, enemies)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
             }
-        };
-        castleCollection.updateOne(
-            query,
-            updateCommand,
-            (err, rslt)=>{
-                if(err){
-                    console.log(err);
-                    return handler(err, null);
+            var enemy = {};
+            for(var a=0;a<enemies.length;a++){
+                if(enemies[a].enemyName===enemyName){
+                    enemy = enemies[a];
+                    break;
                 }
-                var query2 = {"userProgress":{"$elemMatch":{"_id": new ObjectID(_id)}}};
-                var updateCommand2 = {
-                    $set:{
-                        "userProgress.$[r].roomName": name,
-                        "userProgress.$[r].roomEnter": enter,
-                        "userProgress.$[r].roomEnterEnemy": enterEnemy,
-                        "userProgress.$[r].roomLook": look,
-                        "userProgress.$[r].roomLeft": left,
-                        "userProgress.$[r].roomRight": right,
-                        "userProgress.$[r].roomForward": forward,
-                        "userProgress.$[r].roomBackward": backward,
-                        "userProgress.$[r].roomLeftBool": leftB,
-                        "userProgress.$[r].roomRightBool": rightB,
-                        "userProgress.$[r].roomForwardBool": forwardB,
-                        "userProgress.$[r].roomBackwardBool": backwardB,
-                        "userProgress.$[r].roomEnemy": "",
-                        "userProgress.$[r].roomEnemyHealth": "",
-                        "userProgress.$[r].roomEnemyAlive": enemyLive
-                    }
-                };
-                var filter = {
-                    arrayFilters: [
-                        {
-                            "r._id":new ObjectID(_id)
-                        }
-                    ],
-                    multi: true,
-                };
-                usersCollection.updateMany(
-                    query2,
-                    updateCommand2,
-                    filter,
-                    (err, upds)=>{
-                        if(err){
-                            console.log(err);
-                            return handler(err, null);
-                        }
-                        return handler(null, {"msg":"The update was a success"});
-                    }
-                )
             }
-        )
+            var leftB = Boolean(false);
+            var rightB = Boolean(false);
+            var forwardB = Boolean(false);
+            var backwardB = Boolean(false);
+            var enemyLive = Boolean(false);
+            if(leftBool==="true"){
+                leftB = Boolean(true);
+            }
+            if(rightBool==="true"){
+                rightB = Boolean(true);
+            };
+            if(forwardBool==="true"){
+                forwardB = Boolean(true);
+            };
+            if(backwardBool==="true"){
+                backwardB = Boolean(true);
+            };
+            if(enemyAlive==="true"){
+                enemyLive = Boolean(true);
+            }
+            var query = {"_id": new ObjectID(_id)};
+            var updateCommand = {
+                "$set":{
+                    roomName: name,
+                    roomEnter: enter,
+                    roomEnterEnemy: enterEnemy,
+                    roomLook: look,
+                    roomLeft: left,
+                    roomRight: right,
+                    roomForward: forward,
+                    roomBackward: backward,
+                    roomLeftBool: leftB,
+                    roomRightBool: rightB,
+                    roomForwardBool: forwardB,
+                    roomBackwardBool: backwardB,
+                    roomEnemy: enemy,
+                    roomEnemyHealth: enemy.enemyHealth,
+                    roomEnemyAlive: enemyLive,
+                }
+            };
+            castleCollection.updateOne(
+                query,
+                updateCommand,
+                (err, rslt)=>{
+                    if(err){
+                        console.log(err);
+                        return handler(err, null);
+                    }
+                    var query2 = {"userProgress":{"$elemMatch":{"_id": new ObjectID(_id)}}};
+                    var updateCommand2 = {
+                        $set:{
+                            "userProgress.$[r].roomName": name,
+                            "userProgress.$[r].roomEnter": enter,
+                            "userProgress.$[r].roomEnterEnemy": enterEnemy,
+                            "userProgress.$[r].roomLook": look,
+                            "userProgress.$[r].roomLeft": left,
+                            "userProgress.$[r].roomRight": right,
+                            "userProgress.$[r].roomForward": forward,
+                            "userProgress.$[r].roomBackward": backward,
+                            "userProgress.$[r].roomLeftBool": leftB,
+                            "userProgress.$[r].roomRightBool": rightB,
+                            "userProgress.$[r].roomForwardBool": forwardB,
+                            "userProgress.$[r].roomBackwardBool": backwardB,
+                            "userProgress.$[r].roomEnemy": enemy,
+                            "userProgress.$[r].roomEnemyHealth": enemy.enemyHealth,
+                            "userProgress.$[r].roomEnemyAlive": enemyLive
+                        }
+                    };
+                    var filter = {
+                        arrayFilters: [
+                            {
+                                "r._id":new ObjectID(_id)
+                            }
+                        ],
+                        multi: true,
+                    };
+                    usersCollection.updateMany(
+                        query2,
+                        updateCommand2,
+                        filter,
+                        (err, upds)=>{
+                            if(err){
+                                console.log(err);
+                                return handler(err, null);
+                            }
+                            return handler(null, {"msg":"The update was a success"});
+                        }
+                    )
+                }
+            )    
+        });
     };
 
     castleModel.addObjectInv = (data, handler)=>{
