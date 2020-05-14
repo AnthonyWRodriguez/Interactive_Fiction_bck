@@ -139,8 +139,17 @@ function initUser (db) {
             }
             return res.status(200).json({"msg":"Welcome back to life"});
         })
-    })
-    
+    });
+
+    router.get('/allInvObjects', (req, res)=>{
+        userModel.getAllInvObjects((err, objects)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(objects);
+        });
+    });
 
     return router;
 }

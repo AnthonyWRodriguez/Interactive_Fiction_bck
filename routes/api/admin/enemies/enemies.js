@@ -15,6 +15,17 @@ function initEnemies (db) {
         });
     });
 
+    router.post('/newEnemy', (req, res)=>{
+        var data = req.body;
+        enemiesModel.newEnemy(data, (err, enemy)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json(err);
+            }
+            return res.status(200).json(enemy);
+        });
+    });
+
     return router;
 
 }

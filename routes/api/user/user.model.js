@@ -302,13 +302,6 @@ module.exports = (db) =>{
             }
         )
     };
-
-
-
-
-
-
-
     
     userModel.unequipObject = (data, handler)=>{
         var {object, uName, leftE, rightE, dir} = data;
@@ -328,14 +321,14 @@ module.exports = (db) =>{
             var query = {"userName": uName};
             var updateCommand={};
             if(dir==="left"){
-                msg = `Unequipped ${object.objectName} from left hand`;
+                msg = `Unequipped ${object} from left hand`;
                 updateCommand = {
                     $set:{
                         userLeftEquip: fist
                     }
                 }
             }else if(dir==="right"){
-                msg = `Unequipped ${object.objectName} from right hand`;
+                msg = `Unequipped ${object} from right hand`;
                 updateCommand = {
                     $set:{
                         userRightEquip: fist
@@ -343,15 +336,21 @@ module.exports = (db) =>{
                 }
             }else{
                 if(object===leftE){
-                    msg = `Unequipped ${object.objectName} from left hand`;
+                    msg = `Unequipped ${object} from left hand`;
                     updateCommand = {
                         $set:{
                             userLeftEquip: fist
                         }
                     }
-                }
-                if(object===rightE){
-                    msg = `Unequipped ${object.objectName} from right hand`;
+                }else if(object===rightE){
+                    msg = `Unequipped ${object} from right hand`;
+                    updateCommand = {
+                        $set:{
+                            userRightEquip: fist
+                        }
+                    }
+                }else{
+                    msg = `Already unequipped the item`;
                     updateCommand = {
                         $set:{
                             userRightEquip: fist
@@ -514,6 +513,9 @@ module.exports = (db) =>{
         });
     }
 
+    userModel.getAllInvObjects = (handler)=>{
+        return objectsInvCollection.find({}).toArray(handler);
+    };
 
     return userModel;
 }

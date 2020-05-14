@@ -6,13 +6,20 @@ module.exports = (db) =>{
 
     var enemyTemplate = {
         enemyName: "",
+        enemyATK: "",
         enemyHealth: "",
-        enemyWeapon: ""
+        enemyWeapon: "",
+        enemyDesc: "",
     };
 
     enemiesModel.getAllEnemies = (handler) => {
         return enemiesCollection.find({}).toArray(handler);
     };
+
+    enemiesModel.newEnemy = (data, handler)=>{
+        var {name, health, weapon, atk} = data;
+
+    }
 
     return enemiesModel;
 }
