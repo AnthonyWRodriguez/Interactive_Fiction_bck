@@ -6,6 +6,7 @@ module.exports = (db) =>{
     var usersCollection = db.collection("users");
     var objectsEnvCollection = db.collection("objectsEnv");
     var objectsInvCollection = db.collection("objectsInv");
+    var enemyCollection = db.collection("enemies");
 
     var roomTemplate = {
         roomName: "",
@@ -32,11 +33,12 @@ module.exports = (db) =>{
     };
 
     castleModel.newRoom = (data, handler) =>{
-        var {name, enter, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool } = data;
+        var {name, enter, enterEnemy, enemyName, enemyAlive, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool } = data;
         var leftB = Boolean(false);
         var rightB = Boolean(false);
         var forwardB = Boolean(false);
         var backwardB = Boolean(false);
+        var enemyLive = Boolean(false);
         if(leftBool==="true"){
             leftB = Boolean(true);
         }
@@ -49,13 +51,16 @@ module.exports = (db) =>{
         if(backwardBool==="true"){
             backwardB = Boolean(true);
         };
+        if(enemyAlive==="true"){
+            enemyLive = Boolean(true);
+        }
         var room = Object.assign(
             {},
             roomTemplate,
             {
                 roomName: name,
                 roomEnter: enter,
-                roomEnterEnemy: "",
+                roomEnterEnemy: enterEnemy,
                 roomLook: look,
                 roomLeft: left,
                 roomLeftBool: leftB,
@@ -69,7 +74,7 @@ module.exports = (db) =>{
                 roomObjectsEnv: [],
                 roomEnemy: "",
                 roomEnemyHealth: "",
-                roomEnemyAlive: false
+                roomEnemyAlive: enemyLive
             }
         );
         castleCollection.insertOne(room, (err, rslt)=>{
@@ -82,11 +87,12 @@ module.exports = (db) =>{
     };
 
     castleModel.updateRoom = (data, handler) =>{
-        var {_id, name, enter, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool} = data;
+        var {_id, name, enter, enterEnemy, enemyName, enemyAlive, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool} = data;
         var leftB = Boolean(false);
         var rightB = Boolean(false);
         var forwardB = Boolean(false);
         var backwardB = Boolean(false);
+        var enemyLive = Boolean(false);
         if(leftBool==="true"){
             leftB = Boolean(true);
         }
@@ -99,11 +105,15 @@ module.exports = (db) =>{
         if(backwardBool==="true"){
             backwardB = Boolean(true);
         };
+        if(enemyAlive==="true"){
+            enemyLive = Boolean(true);
+        }
         var query = {"_id": new ObjectID(_id)};
         var updateCommand = {
             "$set":{
                 roomName: name,
                 roomEnter: enter,
+                roomEnterEnemy: enterEnemy,
                 roomLook: look,
                 roomLeft: left,
                 roomRight: right,
@@ -113,6 +123,9 @@ module.exports = (db) =>{
                 roomRightBool: rightB,
                 roomForwardBool: forwardB,
                 roomBackwardBool: backwardB,
+                roomEnemy: "",
+                roomEnemyHealth: "",
+                roomEnemyAlive: enemyLive,
             }
         };
         castleCollection.updateOne(
@@ -128,6 +141,7 @@ module.exports = (db) =>{
                     $set:{
                         "userProgress.$[r].roomName": name,
                         "userProgress.$[r].roomEnter": enter,
+                        "userProgress.$[r].roomEnterEnemy": enterEnemy,
                         "userProgress.$[r].roomLook": look,
                         "userProgress.$[r].roomLeft": left,
                         "userProgress.$[r].roomRight": right,
@@ -137,6 +151,9 @@ module.exports = (db) =>{
                         "userProgress.$[r].roomRightBool": rightB,
                         "userProgress.$[r].roomForwardBool": forwardB,
                         "userProgress.$[r].roomBackwardBool": backwardB,
+                        "userProgress.$[r].roomEnemy": "",
+                        "userProgress.$[r].roomEnemyHealth": "",
+                        "userProgress.$[r].roomEnemyAlive": enemyLive
                     }
                 };
                 var filter = {
