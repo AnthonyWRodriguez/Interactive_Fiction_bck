@@ -34,55 +34,68 @@ module.exports = (db) =>{
 
     castleModel.newRoom = (data, handler) =>{
         var {name, enter, enterEnemy, enemyName, enemyAlive, look, left, right, forward, backward, leftBool, rightBool, forwardBool, backwardBool } = data;
-        var leftB = Boolean(false);
-        var rightB = Boolean(false);
-        var forwardB = Boolean(false);
-        var backwardB = Boolean(false);
-        var enemyLive = Boolean(false);
-        if(leftBool==="true"){
-            leftB = Boolean(true);
-        }
-        if(rightBool==="true"){
-            rightB = Boolean(true);
-        };
-        if(forwardBool==="true"){
-            forwardB = Boolean(true);
-        };
-        if(backwardBool==="true"){
-            backwardB = Boolean(true);
-        };
-        if(enemyAlive==="true"){
-            enemyLive = Boolean(true);
-        }
-        var room = Object.assign(
-            {},
-            roomTemplate,
-            {
-                roomName: name,
-                roomEnter: enter,
-                roomEnterEnemy: enterEnemy,
-                roomLook: look,
-                roomLeft: left,
-                roomLeftBool: leftB,
-                roomRight: right,
-                roomRightBool: rightB,
-                roomForward: forward,
-                roomForwardBool: forwardB,
-                roomBackward: backward,
-                roomBackwardBool: backwardB,
-                roomObjectsInv: [],
-                roomObjectsEnv: [],
-                roomEnemy: "",
-                roomEnemyHealth: "",
-                roomEnemyAlive: enemyLive
-            }
-        );
-        castleCollection.insertOne(room, (err, rslt)=>{
+        enemiesCollection.find({}).toArray((err, enemies)=>{
             if(err){
                 console.log(err);
                 return handler(err, null);
             }
-            return handler(null, rslt.ops);
+            var enemy = "";
+            for(var a=0;a<enemies.length;a++){
+                if(enemies[a].enemyName===enemyName){
+                    enemy = enemies[a];
+                    break;
+                }
+            }
+            var leftB = Boolean(false);
+            var rightB = Boolean(false);
+            var forwardB = Boolean(false);
+            var backwardB = Boolean(false);
+            var enemyLive = Boolean(false);
+            if(leftBool==="true"){
+                leftB = Boolean(true);
+            }
+            if(rightBool==="true"){
+                rightB = Boolean(true);
+            };
+            if(forwardBool==="true"){
+                forwardB = Boolean(true);
+            };
+            if(backwardBool==="true"){
+                backwardB = Boolean(true);
+            };
+            if(enemyAlive==="true"){
+                enemyLive = Boolean(true);
+            }
+            var room = Object.assign(
+                {},
+                roomTemplate,
+                {
+                    roomName: name,
+                    roomEnter: enter,
+                    roomEnterEnemy: enterEnemy,
+                    roomLook: look,
+                    roomLeft: left,
+                    roomLeftBool: leftB,
+                    roomRight: right,
+                    roomRightBool: rightB,
+                    roomForward: forward,
+                    roomForwardBool: forwardB,
+                    roomBackward: backward,
+                    roomBackwardBool: backwardB,
+                    roomObjectsInv: [],
+                    roomObjectsEnv: [],
+                    roomEnemy: enemy,
+                    roomEnemyHealth: enemy.enemyHealth,
+                    roomEnemyAlive: enemyLive
+                }
+            );
+            castleCollection.insertOne(room, (err, rslt)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, rslt.ops);
+            });
         });
     };
 
