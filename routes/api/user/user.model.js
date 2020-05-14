@@ -517,5 +517,27 @@ module.exports = (db) =>{
         return objectsInvCollection.find({}).toArray(handler);
     };
 
+    userModel.changeRoom = (data, handler) =>{
+        var {uName, roomID} = data;
+        var room = new ObjectID(roomID)
+        var query = {"userName": uName};
+        var updateCommand = {
+            $set:{
+                "userCurrentRoom": room
+            }
+        }
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, {"msg":"You moved to the next room"});
+            }
+        )
+    }
+
     return userModel;
 }

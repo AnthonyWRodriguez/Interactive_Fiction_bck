@@ -151,6 +151,17 @@ function initUser (db) {
         });
     });
 
+    router.put('/changeRoom', (req, res)=>{
+        var data = req.body;
+        userModel.changeRoom(data, (err, change)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(change);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;
