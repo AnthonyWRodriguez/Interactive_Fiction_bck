@@ -569,5 +569,36 @@ module.exports = (db) =>{
         )
     }
 
+    enemiesModel.killedEnemy = (data, handler)=>{
+        var {userN, roomN} = data;
+        var query = {"userName": userN}
+        var updateCommand = {
+            $set:{
+                "userProgress.$[r].roomEnemyAlive": false
+            }
+        };
+        var filter = {
+            arrayFilters: [
+                {
+                    "r.roomName": roomN
+                }
+            ],
+            multi: true,
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            filter,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
+    }
+
+
     return userModel;
 }

@@ -177,6 +177,17 @@ function initUser (db) {
         });
     });
 
+    router.put('/killedEnemy', (req, res)=>{
+        var data = req.body;
+        enemiesModel.killedEnemy(data, (err, killed)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(killed);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;
