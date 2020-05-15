@@ -203,6 +203,17 @@ function initUser (db) {
         });
     });
 
+    router.put('/useHealingItem', (req, res)=>{
+        var data = req. body;
+        userModel.useHealingItem(data, (err, heal)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(heal);
+        })
+    });
+
     return router;
 }
 module.exports = initUser;

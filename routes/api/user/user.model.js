@@ -620,5 +620,46 @@ module.exports = (db) =>{
         )
     }
 
+    userModel.useHealingItem = (data, handler)=>{
+        var {InvObjs, uName, baseH, realH} = data;
+        var mainArray = [];
+        var one = false
+        var nwH = 0;
+        for(let s =0;s<InvObjs.length;s++){
+            console.log("REACHES HERE!!!");
+            if(InvObjs[s].objectType!=="HEAL"){
+                mainArray.push(InvObjs[s]);
+            }else{
+                if(!one){
+                    one=true;
+                    nwH = realH+InvObjs[s].objectValue;
+                    if(nwH>baseH){
+                        nwH=baseH;
+                    }
+                }else{
+                    mainArray.push(InvObjs[s]);
+                }
+            }
+        }
+        var query = {"userName": uName};
+        var updateCommand = {
+            $set:{
+                "userInventory": mainArray,
+                "userRealHealth": nwH,
+            }
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
+    }
+
     return userModel;
 }
