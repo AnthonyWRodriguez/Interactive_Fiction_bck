@@ -162,6 +162,21 @@ function initUser (db) {
         });
     });
 
+    router.put('/hitEnemy', (req, res)=>{
+        var num = parseInt(req.body.newHP);
+        var data = {
+            "newHealth": num,
+            ...req.body
+        }
+        enemiesModel.hitEnemy(data, (err, hit)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(hit);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;

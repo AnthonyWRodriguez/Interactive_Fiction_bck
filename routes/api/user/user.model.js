@@ -539,5 +539,35 @@ module.exports = (db) =>{
         )
     }
 
+    enemiesModel.hitEnemy = (data, handler)=>{
+        var {userN, roomN, newHealth} = data;
+        var query = {"userName": userN}
+        var updateCommand = {
+            $set:{
+                "userProgress.$[r].roomEnemyHealth": newHealth
+            }
+        };
+        var filter = {
+            arrayFilters: [
+                {
+                    "r.roomName": roomN
+                }
+            ],
+            multi: true,
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            filter,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
+    }
+
     return userModel;
 }
