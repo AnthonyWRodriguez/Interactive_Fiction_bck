@@ -168,7 +168,7 @@ function initUser (db) {
             "newHealth": num,
             ...req.body
         }
-        enemiesModel.hitEnemy(data, (err, hit)=>{
+        userModel.hitEnemy(data, (err, hit)=>{
             if(err){
                 console.log(err);
                 return res.status(500).json({"msg":"Error"});
@@ -179,12 +179,27 @@ function initUser (db) {
 
     router.put('/killedEnemy', (req, res)=>{
         var data = req.body;
-        enemiesModel.killedEnemy(data, (err, killed)=>{
+        userModel.killedEnemy(data, (err, killed)=>{
             if(err){
                 console.log(err);
                 return res.status(500).json({"msg":"Error"});
             }
             return res.status(200).json(killed);
+        });
+    });
+
+    router.put('/getHit', (req, res)=>{
+        var health = parseInt(req.body.health);
+        var data = {
+            "HP": health,
+            ...req.body
+        }
+        userModel.getHit(data, (err, hit)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(hit);
         });
     });
 

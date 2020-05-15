@@ -539,7 +539,7 @@ module.exports = (db) =>{
         )
     }
 
-    enemiesModel.hitEnemy = (data, handler)=>{
+    userModel.hitEnemy = (data, handler)=>{
         var {userN, roomN, newHealth} = data;
         var query = {"userName": userN}
         var updateCommand = {
@@ -569,7 +569,7 @@ module.exports = (db) =>{
         )
     }
 
-    enemiesModel.killedEnemy = (data, handler)=>{
+    userModel.killedEnemy = (data, handler)=>{
         var {userN, roomN} = data;
         var query = {"userName": userN}
         var updateCommand = {
@@ -599,6 +599,26 @@ module.exports = (db) =>{
         )
     }
 
+    userModel.getHit = (data, handler)=>{
+        var {userN, HP} = data;
+        var query = {"userName": userN}
+        var updateCommand = {
+            $set:{
+                "userRealHealth": HP
+            }
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
+    }
 
     return userModel;
 }
