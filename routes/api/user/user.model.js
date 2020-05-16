@@ -80,7 +80,7 @@ module.exports = (db) =>{
                         userCurrentRoom: room,
                         userRole: "player",
                         userCommands: [                
-                            `You start at the doors of a massive castle. 
+                            `You start at the "entrance doors" of a massive castle. 
                             You look at your surroundings: A wide open space. 
                             This castle has been constructed atop a cliff with no apparent way to enter or leave. 
                             A maiden's shouts can be faintly heard inside. 
@@ -478,7 +478,7 @@ module.exports = (db) =>{
                         userRightEquip: fist,
                         userCurrentRoom: room,
                         userCommands: [                
-                            `You start at the doors of a massive castle. 
+                            `You start at the "entrance doors" of a massive castle. 
                             You look at your surroundings: A wide open space. 
                             This castle has been constructed atop a cliff with no apparent way to enter or leave. 
                             A maiden's shouts can be faintly heard inside. 
