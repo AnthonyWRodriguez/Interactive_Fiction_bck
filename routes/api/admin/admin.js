@@ -17,9 +17,6 @@ function initAdmin(db){
     var enemiesRouter = require('./enemies/enemies')(db);
     router.use('/enemies', enemiesRouter);
 
-    var chestsRouter = require('./chests/chests')(db);
-    router.use('/chests', chestsRouter);
-
     return router;
 }
 module.exports = initAdmin;

@@ -90,7 +90,7 @@ module.exports = (db) =>{
                             The path behind you is gone beacuse the wooden bridge collapsed. 
                             You can go around the castle through the left or the right. `,
                             `As you start to feel you gain control over your whole body after daydreaming about
-                            ... well... that's not important..., but after you regain body control, 
+                            ... well... that's not important..., but
                             you hear a strange voice saying "Welcome to my world, dear player."`,
                             `"I'm the inner voice of your conscience. 
                             During this adventure you're about to embark, 
@@ -393,6 +393,7 @@ module.exports = (db) =>{
             }
         )
     }
+    
 
     userModel.allVerbs=(handler)=>{
         verbCollection.find({}).toArray(handler);
@@ -488,7 +489,7 @@ module.exports = (db) =>{
                             The path behind you is gone beacuse the wooden bridge collapsed. 
                             You can go around the castle through the left or the right. `,
                             `As you start to feel you gain control over your whole body after daydreaming about
-                            ... well... that's not important..., but after you regain body control, 
+                            ... well... that's not important..., but 
                             you hear a strange voice saying "Welcome to my world, dear player."`,
                             `"I'm the inner voice of your conscience. 
                             During this adventure you're about to embark, 
