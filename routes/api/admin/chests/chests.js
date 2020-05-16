@@ -26,6 +26,17 @@ function initChests (db) {
         }); 
     });
 
+    router.put('/updateChest', (req, res)=>{
+        var data = req.body;
+        chestsModel.updateChest(data, (err, chest)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(chest);
+        }); 
+    });
+
     return router;
 }
 module.exports = initChests;
