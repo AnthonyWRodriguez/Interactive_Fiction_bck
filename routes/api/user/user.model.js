@@ -665,5 +665,35 @@ module.exports = (db) =>{
         chestRoomCollection.find({}).toArray(handler);
     };
 
+    userModel.addChestToRoom = (data, handler)=>{
+        var {uName, currentRName, chest} = data;
+        var query = {"userName": uName};
+        var updateCommand = {
+            $push:{
+                "userProgress.$[r].roomObjectsEnv": chest
+            },
+        };
+        var filter = {
+            arrayFilters: [
+                {
+                    "r.roomName": currentRName
+                }
+            ],
+            multi: true,
+        };
+        userCollection.findOneAndUpdate(
+            query,
+            updateCommand,
+            filter,
+            (err, upd)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, upd);
+            }
+        )
+    }
+
     return userModel;
 }
