@@ -214,6 +214,17 @@ function initUser (db) {
         })
     });
 
+    
+    router.get('/allChestRoom', (req, res)=>{
+        userModel.allChestRoom((err, chestsRooms)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(chestsRooms);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;

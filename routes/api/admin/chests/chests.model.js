@@ -4,6 +4,7 @@ module.exports = (db) =>{
     chestsModel = {};
 
     var chestsCollection = db.collection("chests");
+    var chestRoomCollection = db.collection("roomChest");
     var objectsInvCollection = db.collection("objectsInv");
 
     var chestTemplate = {
@@ -15,6 +16,11 @@ module.exports = (db) =>{
         objectHelp: "",
         objectContents: {},
     };
+
+    var chestRoomTemplate = {
+        roomID: "",
+        chest: {},
+    }
 
     chestsModel.getAll = (handler) =>{
         chestsCollection.find({}).toArray(handler);
@@ -94,6 +100,41 @@ module.exports = (db) =>{
             });
         });
     };
+
+    chestsModel.allChestRoom = (handler) =>{
+        chestRoomCollection.find({}).toArray(handler);
+    };
+
+    chestsModel.linkChestToRoom = (data, handler)=>{
+        var {chestName, roomId} = data;
+        chestsCollection.find({}).toArray((err, chests)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
+            }
+            var roomCH = {};
+            for(var x=0;x<chests.length;x++){
+                if(chests[x].objectName===chestName){
+                    roomCH = chests[x];
+                }
+            }
+            var chestRoom = Object.assign(
+                {},
+                chestRoomTemplate,
+                {
+                    roomID: new ObjectID(roomId),
+                    chest: roomCH,
+                }
+            );
+            chestRoomCollection.insertOne(chestRoom ,(err, chestR)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                return handler(null, chestR);
+            });
+        });
+    }
 
     return chestsModel;
 }

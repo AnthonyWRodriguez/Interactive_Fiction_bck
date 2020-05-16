@@ -37,6 +37,27 @@ function initChests (db) {
         }); 
     });
 
+    router.get('/allChestRoom', (req, res)=>{
+        chestsModel.allChestRoom((err, chestsRooms)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(chestsRooms);
+        });
+    });
+
+    router.post('/linkChestToRoom', (req, res)=>{
+        var data = req.body;
+        chestsModel.linkChestToRoom(data, (err, link)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(link);
+        });
+    });
+
     return router;
 }
 module.exports = initChests;

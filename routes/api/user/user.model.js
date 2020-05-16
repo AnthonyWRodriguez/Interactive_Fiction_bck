@@ -8,6 +8,7 @@ module.exports = (db) =>{
     var verbCollection = db.collection("verbs");
     var objectsEnvCollection = db.collection("objectsEnv");
     var objectsInvCollection = db.collection("objectsInv");
+    var chestRoomCollection = db.collection("roomChest");
 
     var userTemplate ={
         userName: "",
@@ -659,6 +660,10 @@ module.exports = (db) =>{
             }
         )
     }
+
+    userModel.allChestRoom = (handler) =>{
+        chestRoomCollection.find({}).toArray(handler);
+    };
 
     return userModel;
 }
