@@ -626,7 +626,6 @@ module.exports = (db) =>{
         var one = false
         var nwH = 0;
         for(let s =0;s<InvObjs.length;s++){
-            console.log("REACHES HERE!!!");
             if(InvObjs[s].objectType!=="HEAL"){
                 mainArray.push(InvObjs[s]);
             }else{
