@@ -6,6 +6,7 @@ module.exports = (db) =>{
     var objectsCollection = db.collection("objectsEnv");
     var objectsInvCollection = db.collection("objectsInv");
     var chestRoomCollection = db.collection("roomChest");
+    var roomMoveCollection = db.collection("roomMove");
 
     var objectTemplate = {
         objectName: "",
@@ -37,6 +38,11 @@ module.exports = (db) =>{
     var chestRoomTemplate = {
         roomID: "",
         chest: {},
+    }
+
+    var roomMoveTemplate = {
+        roomID: "",
+        dir: "",
     }
 
     objectsModel.getAllObjects = (handler)=>{
@@ -187,6 +193,29 @@ module.exports = (db) =>{
                 return handler(null, chestR);
             });
         });
+    }
+
+    objectsModel.allRoomMove = (handler)=>{
+        roomMoveCollection.find({}).toArray(handler);
+    }
+
+    objectsModel.newRoomMove = (data, handler)=>{
+        var {roomID, dir}=data;
+        var roomMove = Object.assign(
+            {},
+            roomMoveTemplate,
+            {
+                roomID: roomID,
+                dir: dir,
+            }
+        );
+        roomMoveCollection.insertOne(roomMove, (err, object)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
+            }
+            return handler(null, object.ops);
+        })
     }
         
     return objectsModel;

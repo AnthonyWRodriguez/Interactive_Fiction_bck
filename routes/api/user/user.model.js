@@ -697,7 +697,7 @@ module.exports = (db) =>{
     }
 
     userModel.openDoor = (data, handler)=>{
-        var {roomID} = data;
+        var {roomID, uName, objectN} = data;
 
     }
 
@@ -775,14 +775,6 @@ module.exports = (db) =>{
                 return handler(null, {"more":"But you have already gotten the key, so the chest is empty"});
             }
         });
-    }
-
-    userModel.closeDoor = (data, handler)=>{
-        var {roomID} = data;
-    }
-
-    userModel.closeChest = (data, handler)=>{
-        var {roomID} = data;
     }
 
     return userModel;

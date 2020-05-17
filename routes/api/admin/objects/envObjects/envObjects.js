@@ -152,6 +152,27 @@ function initObjects (db) {
         });
     });
 
+    router.get('/allRoomMove', (req, res)=>{
+        objectsModel.allRoomMove((err, objects)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(objects);
+        });
+    });
+
+    router.post('/newRoomMove', (req, res)=>{
+        var data = req.body;
+        objectsModel.newRoomMove(data, (err, objects)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(objects);
+        });
+    });
+
     return router;
 }
 module.exports = initObjects;
