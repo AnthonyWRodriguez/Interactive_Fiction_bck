@@ -393,7 +393,7 @@ module.exports = (db) =>{
             }
         )
     }
-    
+
 
     userModel.allVerbs=(handler)=>{
         verbCollection.find({}).toArray(handler);
@@ -694,6 +694,76 @@ module.exports = (db) =>{
                 return handler(null, upd);
             }
         )
+    }
+
+    userModel.openDoor = (data, handler)=>{
+        var {roomID} = data;
+
+    }
+
+    userModel.openChest = (data, handler)=>{
+        var {roomID, uName, objectN} = data;
+        userCollection.find({}).toArray((err, users)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null);
+            }
+            var user = {};
+            var room = {};
+            var chest = {};
+            for (var x=0;x<users.length;x++){
+                if(users[x].userName===uName){
+                    user = users[x];
+                    break;
+                }
+            }
+            for (var x=0;x<user.userProgress.length;x++){
+                if(user.userProgress[x]._id==roomID){
+                    room = user.userProgress[x];
+                    break;
+                }
+            }
+            for (var x=0;x<room.roomObjectsEnv.length;x++){
+                if(room.roomObjectsEnv[x].objectName===objectN){
+                    chest = room.roomObjectsEnv[x];
+                    break;
+                }
+            }
+            var query = {"userName": uName};
+            var updateCommand = {
+                $push:{
+                    "userProgress.$[r].roomObjectsInv": chest.objectContents
+                }
+            };
+            var filter = {
+                arrayFilters: [
+                    {
+                        "r._id": new ObjectID(roomID)
+                    }
+                ],
+                multi: true,
+            };
+            userCollection.findOneAndUpdate(
+                query,
+                updateCommand,
+                filter,
+                (err, upd)=>{
+                    if(err){
+                        console.log(err);
+                        return handler(err, null);
+                    }
+                    return handler(null, upd);
+                }
+            );
+        });
+    }
+
+    userModel.closeDoor = (data, handler)=>{
+        var {roomID} = data;
+    }
+
+    userModel.closeChest = (data, handler)=>{
+        var {roomID} = data;
     }
 
     return userModel;

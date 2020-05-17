@@ -236,6 +236,28 @@ function initUser (db) {
         });
     });
 
+    router.put('/openDoor',(req, res)=>{
+        var data = req.body;
+        userModel.openDoor(data, (err, open)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(open);
+        });
+    });
+
+    router.put('/openChest',(req, res)=>{
+        var data = req.body;
+        userModel.openChest(data, (err, open)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(open);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;
