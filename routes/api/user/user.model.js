@@ -772,7 +772,7 @@ module.exports = (db) =>{
                 );
     
             }else{
-                return handler(null, "It has already been interacted with");
+                return handler(null, {"more":"But you have already gotten the key, so the chest is empty"});
             }
         });
     }
