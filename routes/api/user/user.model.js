@@ -9,6 +9,7 @@ module.exports = (db) =>{
     var objectsEnvCollection = db.collection("objectsEnv");
     var objectsInvCollection = db.collection("objectsInv");
     var chestRoomCollection = db.collection("roomChest");
+    var roomMoveCollection = db.collection("roomMove");
 
     var userTemplate ={
         userName: "",
@@ -698,7 +699,84 @@ module.exports = (db) =>{
 
     userModel.openDoor = (data, handler)=>{
         var {roomID, uName, objectN} = data;
-
+        roomMoveCollection.find({}).toArray((err, roomMoves)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null)
+            }
+            var dir = "";
+            for (var x=0;x<roomMoves.length;x++){
+                if(roomMoves[x].roomID==roomID){
+                    dir = roomMoves[x].dir;
+                    break;
+                }
+            }
+            userCollection.find({}).toArray((err, users)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                var user = {};
+                var room = {};
+                var object = {};
+                for (var x=0;x<users.length;x++){
+                    if(users[x].userName===uName){
+                        user = users[x];
+                        break;
+                    }
+                }
+                for (var x=0;x<user.userProgress.length;x++){
+                    if(user.userProgress[x]._id==roomID){
+                        room = user.userProgress[x];
+                        break;
+                    }
+                }
+                for (var x=0;x<room.roomObjectsEnv.length;x++){
+                    if(room.roomObjectsEnv[x].objectName===objectN){
+                        object = room.roomObjectsEnv[x];
+                        break;
+                    }
+                }
+                var query = {"userName": uName};
+                var updateCommand = {}
+                if(!object.objectInteracted){
+                    updateCommand = {
+                        $set:{
+                            ["userProgress.$[r].room"+dir+"Bool"]: true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true
+                        }
+                    };    
+                }
+                var filter = {
+                    arrayFilters: [
+                        {
+                            "r._id": new ObjectID(roomID)
+                        },
+                        {
+                            "c.objectName": objectN
+                        }
+                    ],
+                    multi: true,
+                };
+                if(!object.objectInteracted){
+                    userCollection.findOneAndUpdate(
+                        query,
+                        updateCommand,
+                        filter,
+                        (err, upd)=>{
+                            if(err){
+                                console.log(err);
+                                return handler(err, null);
+                            }
+                            return handler(null, upd);
+                        }
+                    );
+        
+                }else{
+                    return handler(null, {"more":"But you have already opened the door, so its redundant, to do so again"});
+                }
+            });
+        });
     }
 
     userModel.openChest = (data, handler)=>{
@@ -730,21 +808,16 @@ module.exports = (db) =>{
                 }
             }
             var query = {"userName": uName};
+            var updateCommand = {}
             if(!chest.objectInteracted){
-                var updateCommand = {
+                updateCommand = {
                     $push:{
                         "userProgress.$[r].roomObjectsInv": chest.objectContents
                     },
                     $set:{
                         "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true
                     }
-                };    
-            }else{
-                var updateCommand = {
-                    $push:{
-                        "userProgress.$[r].roomObjectsInv": chest.objectContents
-                    }
-                };    
+                };      
             }
             var filter = {
                 arrayFilters: [
