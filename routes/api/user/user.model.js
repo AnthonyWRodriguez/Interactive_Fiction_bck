@@ -730,31 +730,50 @@ module.exports = (db) =>{
                 }
             }
             var query = {"userName": uName};
-            var updateCommand = {
-                $push:{
-                    "userProgress.$[r].roomObjectsInv": chest.objectContents
-                }
-            };
+            if(!chest.objectInteracted){
+                var updateCommand = {
+                    $push:{
+                        "userProgress.$[r].roomObjectsInv": chest.objectContents
+                    },
+                    $set:{
+                        "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true
+                    }
+                };    
+            }else{
+                var updateCommand = {
+                    $push:{
+                        "userProgress.$[r].roomObjectsInv": chest.objectContents
+                    }
+                };    
+            }
             var filter = {
                 arrayFilters: [
                     {
                         "r._id": new ObjectID(roomID)
+                    },
+                    {
+                        "c.objectName": objectN
                     }
                 ],
                 multi: true,
             };
-            userCollection.findOneAndUpdate(
-                query,
-                updateCommand,
-                filter,
-                (err, upd)=>{
-                    if(err){
-                        console.log(err);
-                        return handler(err, null);
+            if(!chest.objectInteracted){
+                userCollection.findOneAndUpdate(
+                    query,
+                    updateCommand,
+                    filter,
+                    (err, upd)=>{
+                        if(err){
+                            console.log(err);
+                            return handler(err, null);
+                        }
+                        return handler(null, upd);
                     }
-                    return handler(null, upd);
-                }
-            );
+                );
+    
+            }else{
+                return handler(null, "It has already been interacted with");
+            }
         });
     }
 
