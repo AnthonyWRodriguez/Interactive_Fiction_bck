@@ -26,11 +26,14 @@ function initApp(db){
   var apiUser = require('./routes/api/user/user')(db);
   var apiObjects = require('./routes/api/admin/objects/objects')(db);
 
-  app.use('/', indexRouter);
   app.use('/api', apiRouter);
   app.use('/admin', apiAdmin);
   app.use('/user', apiUser);
   app.use('/objects', apiObjects);
+
+  app.get('/*', (req, res, next)=>{
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  });
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
