@@ -416,8 +416,8 @@ module.exports = (db) =>{
     };
 
     userModel.getAllObjectsInv = (data, handler)=>{
-        var name = data;
-        var query = {"objectName": name};
+        var {name, uName} = data;
+        var query = {"userName":uName, "userInventory": {"$elemMatch":{"objectName": name}}};
         objectsInvCollection.findOne(
             query,
             (err, obj)=>{

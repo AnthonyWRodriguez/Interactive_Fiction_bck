@@ -119,13 +119,19 @@ function initUser (db) {
         });
     });
 
-    router.get('/allObjectsInv/:name', (req, res)=>{
-        var data = req.params.name;
+    router.get('/allObjectsInv/:name/:uName', (req, res)=>{
+        var name = req.params.name;
+        var uName = req.params.uName;
+        var data = {
+            "name": name,
+            "uName": uName
+        }
         userModel.getAllObjectsInv(data, (err, objects)=>{
             if(err){
                 console.log(err);
                 return res.status(500).json({"msg":"Error"});
             }
+            console.log(objects);
             return res.status(200).json(objects);
         });
     });
