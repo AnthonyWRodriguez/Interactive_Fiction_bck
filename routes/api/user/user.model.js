@@ -850,5 +850,90 @@ module.exports = (db) =>{
         });
     }
 
+    userModel.useKey = (data, handler)=>{
+        var {currentRName, uName, doorP} = data;
+        roomMoveCollection.find({}).toArray((err, roomMoves)=>{
+            if(err){
+                console.log(err);
+                return handler(err, null)
+            }
+            var dir = "";
+            for (var x=0;x<roomMoves.length;x++){
+                if(roomMoves[x].roomName==currentRName){
+                    dir = roomMoves[x].dir;
+                    break;
+                }
+            }
+            userCollection.find({}).toArray((err, users)=>{
+                if(err){
+                    console.log(err);
+                    return handler(err, null);
+                }
+                var user = {};
+                var room = {};
+                var object = {};
+                for (var x=0;x<users.length;x++){
+                    if(users[x].userName===uName){
+                        user = users[x];
+                        break;
+                    }
+                }
+                for (var x=0;x<user.userProgress.length;x++){
+                    if(user.userProgress[x].roomName==currentRName){
+                        room = user.userProgress[x];
+                        break;
+                    }
+                }
+                for (var x=0;x<room.roomObjectsEnv.length;x++){
+                    if(room.roomObjectsEnv[x].objectName===doorP+" Door"||
+                    room.roomObjectsEnv[x].objectName===doorP+" Doors"){
+                        object = room.roomObjectsEnv[x];
+                        break;
+                    }
+                }
+                var query = {"userName": uName};
+                var updateCommand = {};
+                if(object.objectName!==undefined){
+                    if(!object.objectInteracted){
+                        updateCommand = {
+                            $set:{
+                                ["userProgress.$[r].room"+dir+"Bool"]: true,
+                                "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true
+                            }
+                        };    
+                        var filter = {
+                            arrayFilters: [
+                                {
+                                    "r.roomName": currentRName
+                                },
+                                {
+                                    "c.objectName": object.objectName
+                                }
+                            ],
+                            multi: true,
+                        };
+                        userCollection.findOneAndUpdate(
+                            query,
+                            updateCommand,
+                            filter,
+                            (err, upd)=>{
+                                if(err){
+                                    console.log(err);
+                                    return handler(err, null);
+                                }
+                                return handler(null, {"msg":`Used the ${doorP} Key. Now the door/doors are open`});
+                            }
+                        );
+                    }else{
+                        return handler(null, {"msg":`Used the ${doorP} Key. Now the door/doors are open`,
+                        "more":"But you have already opened the door, so its redundant, to do so again"});
+                    }    
+                }else{
+                    return handler(null, {"msg":`There is no object to use the ${doorP} Key with`});
+                }
+            });
+        });
+    }
+
     return userModel;
 }

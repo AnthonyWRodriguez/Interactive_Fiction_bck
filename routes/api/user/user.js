@@ -264,6 +264,17 @@ function initUser (db) {
         });
     });
 
+    router.put('/useKey',(req, res)=>{
+        var data = req.body;
+        userModel.useKey(data, (err, open)=>{
+            if(err){
+                console.log(err);
+                return res.status(500).json({"msg":"Error"});
+            }
+            return res.status(200).json(open);
+        });
+    });
+
     return router;
 }
 module.exports = initUser;
