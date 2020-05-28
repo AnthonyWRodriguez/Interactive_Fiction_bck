@@ -851,7 +851,7 @@ module.exports = (db) =>{
     }
 
     userModel.useKey = (data, handler)=>{
-        var {currentRName, uName, doorP} = data;
+        var {currentRName, uName, doorP, InvObjs, currentRID} = data;
         roomMoveCollection.find({}).toArray((err, roomMoves)=>{
             if(err){
                 console.log(err);
@@ -859,7 +859,7 @@ module.exports = (db) =>{
             }
             var dir = "";
             for (var x=0;x<roomMoves.length;x++){
-                if(roomMoves[x].roomName==currentRName){
+                if(roomMoves[x].roomID==currentRID){
                     dir = roomMoves[x].dir;
                     break;
                 }
@@ -872,6 +872,7 @@ module.exports = (db) =>{
                 var user = {};
                 var room = {};
                 var object = {};
+                var msg = "";
                 for (var x=0;x<users.length;x++){
                     if(users[x].userName===uName){
                         user = users[x];
@@ -885,22 +886,71 @@ module.exports = (db) =>{
                     }
                 }
                 for (var x=0;x<room.roomObjectsEnv.length;x++){
-                    if(room.roomObjectsEnv[x].objectName===doorP+" Door"||
-                    room.roomObjectsEnv[x].objectName===doorP+" Doors"){
+                    if(room.roomObjectsEnv[x].objectName===doorP+" Door"){
                         object = room.roomObjectsEnv[x];
+                        msg = "door is";
+                        break
+                    }
+                    if(room.roomObjectsEnv[x].objectName===doorP+" Doors"){
+                        object = room.roomObjectsEnv[x];
+                        msg = "doors are";
                         break;
+                    }
+                }
+                var newInv = [];
+                var one = true;
+                for(var x=0;x<InvObjs.length;x++){
+                    if(InvObjs[x].objectName===(doorP+" Key")){
+                        if(one){
+                            one=false;
+                        }else{
+                            newInv.push(InvObjs[x]);
+                        }
+                    }else{
+                        newInv.push(InvObjs[x]);
                     }
                 }
                 var query = {"userName": uName};
                 var updateCommand = {};
+                if(dir==="Forward"){
+                    console.log("SOMETING MUST HAPPEN");
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomForwardBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
+                }
+                if(dir==="Backward"){
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomBackwardBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
+                }   
+                if(dir==="Left"){
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomLeftBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
+                }   
+                if(dir==="Right"){
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomRightBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
+                }
                 if(object.objectName!==undefined){
                     if(!object.objectInteracted){
-                        updateCommand = {
-                            $set:{
-                                ["userProgress.$[r].room"+dir+"Bool"]: true,
-                                "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true
-                            }
-                        };    
                         var filter = {
                             arrayFilters: [
                                 {
@@ -921,12 +971,13 @@ module.exports = (db) =>{
                                     console.log(err);
                                     return handler(err, null);
                                 }
-                                return handler(null, {"msg":`Used the ${doorP} Key. Now the door/doors are open`});
+                                return handler(null, {"msg":`Used the ${doorP} Key, but just as the ${msg} unlocking,
+                                the key got stuck, rendering the key useless. Nonetheless, the ${msg} now open`});
                             }
                         );
                     }else{
-                        return handler(null, {"msg":`Used the ${doorP} Key. Now the door/doors are open`,
-                        "more":"But you have already opened the door, so its redundant, to do so again"});
+                        return handler(null, {"msg":`Used the ${doorP} Key.`,
+                        "more":`But the ${msg} already opened, so its redundant, to do so again`});
                     }    
                 }else{
                     return handler(null, {"msg":`There is no object to use the ${doorP} Key with`});
