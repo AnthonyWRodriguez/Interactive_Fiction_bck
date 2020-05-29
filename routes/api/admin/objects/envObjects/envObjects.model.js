@@ -32,6 +32,8 @@ module.exports = (db) =>{
         objectBurnBool: false,
         objectShootBool: false,
         objectShatterBool: false,
+        objectHelpBool: false,
+        objectDescBool: false,
     };
 
     
@@ -50,8 +52,8 @@ module.exports = (db) =>{
     };
 
     objectsModel.newObject = (data, handler)=>{
-        var {name, desc, push, pull, read, open, close, climb, burn, shoot, shatter, contentName, help, 
-            pushBool, pullBool, readBool, openBool, closeBool, climbBool, burnBool, shootBool, shatterBool,} = data;
+        var {name, desc, push, pull, read, open, close, climb, burn, shoot, shatter, contentName, help, pushBool, 
+            pullBool, readBool, openBool, closeBool, climbBool, burnBool, shootBool, shatterBool, helpBool, descBool} = data;
         objectsInvCollection.find({}).toArray((err, invs)=>{
             if(err){
                 console.log(err);
@@ -91,6 +93,8 @@ module.exports = (db) =>{
                     objectBurnBool: burnBool,
                     objectShootBool: shootBool,
                     objectShatterBool: shatterBool,
+                    objectHelpBool: helpBool,
+                    objectDescBool: descBool,
                 }
             );
             objectsCollection.insertOne(object, (err, object)=>{
@@ -104,8 +108,8 @@ module.exports = (db) =>{
     };
 
     objectsModel.updateObject = (data, handler)=>{
-        var {id, name, desc, push, pull, read, open, close, climb, burn, shoot, shatter, contentName, help, 
-            pushBool, pullBool, readBool, openBool, closeBool, climbBool, burnBool, shootBool, shatterBool,} = data;
+        var {id, name, desc, push, pull, read, open, close, climb, burn, shoot, shatter, contentName, help, pushBool, 
+            pullBool, readBool, openBool, closeBool, climbBool, burnBool, shootBool, shatterBool, helpBool, descBool} = data;
         objectsInvCollection.find({}).toArray((err, invs)=>{
             if(err){
                 console.log(err);
@@ -144,6 +148,8 @@ module.exports = (db) =>{
                     objectBurnBool: burnBool,
                     objectShootBool: shootBool,
                     objectShatterBool: shatterBool,
+                    objectHelpBool: helpBool,
+                    objectDescBool: descBool,
                 }
             }
             objectsCollection.findOneAndUpdate(
