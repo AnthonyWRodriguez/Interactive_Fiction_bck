@@ -698,7 +698,7 @@ module.exports = (db) =>{
     }
 
     userModel.openDoor = (data, handler)=>{
-        var {roomID, uName, objectN} = data;
+        var {roomID, uName, objectN, InvObjs} = data;
         roomMoveCollection.find({}).toArray((err, roomMoves)=>{
             if(err){
                 console.log(err);
@@ -719,6 +719,7 @@ module.exports = (db) =>{
                 var user = {};
                 var room = {};
                 var object = {};
+                var msg = "";
                 for (var x=0;x<users.length;x++){
                     if(users[x].userName===uName){
                         user = users[x];
@@ -731,21 +732,69 @@ module.exports = (db) =>{
                         break;
                     }
                 }
+                var words = objectN.split(' ');
                 for (var x=0;x<room.roomObjectsEnv.length;x++){
                     if(room.roomObjectsEnv[x].objectName===objectN){
                         object = room.roomObjectsEnv[x];
+                        if(words[1]==="Door"){
+                            msg="door is";
+                        }
+                        if(words[1]==="Doors"){
+                            msg="doors are";
+                        }
                         break;
                     }
                 }
+                var newInv = [];
+                var one = true;
+                for(var x=0;x<InvObjs.length;x++){
+                    if(InvObjs[x].objectName===(words[0]+" Key")){
+                        if(one){
+                            one=false;
+                        }else{
+                            newInv.push(InvObjs[x]);
+                        }
+                    }else{
+                        newInv.push(InvObjs[x]);
+                    }
+                }
                 var query = {"userName": uName};
-                var updateCommand = {}
-                if(!object.objectInteracted){
+                var updateCommand = {};
+                if(dir==="Forward"){
                     updateCommand = {
                         $set:{
-                            ["userProgress.$[r].room"+dir+"Bool"]: true,
-                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true
+                            "userProgress.$[r].roomForwardBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
                         }
-                    };    
+                    };        
+                }
+                if(dir==="Backward"){
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomBackwardBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
+                }   
+                if(dir==="Left"){
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomLeftBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
+                }   
+                if(dir==="Right"){
+                    updateCommand = {
+                        $set:{
+                            "userProgress.$[r].roomRightBool":true,
+                            "userProgress.$[r].roomObjectsEnv.$[c].objectInteracted": true,
+                            "userInventory": newInv
+                        }
+                    };        
                 }
                 var filter = {
                     arrayFilters: [
@@ -758,22 +807,27 @@ module.exports = (db) =>{
                     ],
                     multi: true,
                 };
-                if(!object.objectInteracted){
-                    userCollection.findOneAndUpdate(
-                        query,
-                        updateCommand,
-                        filter,
-                        (err, upd)=>{
-                            if(err){
-                                console.log(err);
-                                return handler(err, null);
+                if(object.objectName!==undefined){
+                    if(!object.objectInteracted){
+                        userCollection.findOneAndUpdate(
+                            query,
+                            updateCommand,
+                            filter,
+                            (err, upd)=>{
+                                if(err){
+                                    console.log(err);
+                                    return handler(err, null);
+                                }
+                                return handler(null, {"msg":`Opened the ${objectN}, but just as the ${msg} unlocking,
+                                the key got stuck, rendering the key useless. Nonetheless, the ${msg} now open`});
                             }
-                            return handler(null, upd);
-                        }
-                    );
-        
+                        );
+                    }else{
+                        return handler(null, {"msg":`Opened the ${objectN}.`,
+                        "more":`But the ${msg} already opened, so its redundant, to do so again`});
+                    }    
                 }else{
-                    return handler(null, {"more":"But you have already opened the door, so its redundant, to do so again"});
+                    return handler(null, {"msg":`There is no object to open the ${objectN} with`});
                 }
             });
         });
@@ -913,7 +967,6 @@ module.exports = (db) =>{
                 var query = {"userName": uName};
                 var updateCommand = {};
                 if(dir==="Forward"){
-                    console.log("SOMETING MUST HAPPEN");
                     updateCommand = {
                         $set:{
                             "userProgress.$[r].roomForwardBool":true,
