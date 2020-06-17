@@ -20,11 +20,9 @@ function initObjects (db) {
         var pull = false;
         var read = false;
         var open = false;
-        var close = false;
         var climb = false;
-        var burn = false;
-        var shoot = false;
-        var shatter = false;
+        var help = false;
+        var desc = false;
         if(req.body.pushB==="true"){
             push=true;
         }
@@ -37,31 +35,23 @@ function initObjects (db) {
         if(req.body.openB==="true"){
             open=true;
         }
-        if(req.body.closeB==="true"){
-            close=true;
-        }
         if(req.body.climbB==="true"){
             climb=true;
         }
-        if(req.body.burnB==="true"){
-            burn=true;
+        if(req.body.helpB==="true"){
+            help=true;
         }
-        if(req.body.shootB==="true"){
-            shoot=true;
-        }
-        if(req.body.shatterB==="true"){
-            shatter=true;
+        if(req.body.descB==="true"){
+            desc=true;
         }
         var data = {
             "pushBool": push,
             "pullBool": pull,
             "readBool": read,
             "openBool": open,
-            "closeBool": close,
             "climbBool": climb,
-            "burnBool": burn,
-            "shootBool": shoot,
-            "shatterBool": shatter,
+            "helpBool": help,
+            "descBool": desc,
             ...req.body
         }
         objectsModel.newObject(data, (err, object)=>{
@@ -78,11 +68,9 @@ function initObjects (db) {
         var pull = false;
         var read = false;
         var open = false;
-        var close = false;
         var climb = false;
-        var burn = false;
-        var shoot = false;
-        var shatter = false;
+        var help = false;
+        var desc = false;
         if(req.body.pushB==="true"){
             push=true;
         }
@@ -95,31 +83,23 @@ function initObjects (db) {
         if(req.body.openB==="true"){
             open=true;
         }
-        if(req.body.closeB==="true"){
-            close=true;
-        }
         if(req.body.climbB==="true"){
             climb=true;
         }
-        if(req.body.burnB==="true"){
-            burn=true;
+        if(req.body.helpB==="true"){
+            help=true;
         }
-        if(req.body.shootB==="true"){
-            shoot=true;
-        }
-        if(req.body.shatterB==="true"){
-            shatter=true;
+        if(req.body.descB==="true"){
+            desc=true;
         }
         var data = {
             "pushBool": push,
             "pullBool": pull,
             "readBool": read,
             "openBool": open,
-            "closeBool": close,
             "climbBool": climb,
-            "burnBool": burn,
-            "shootBool": shoot,
-            "shatterBool": shatter,
+            "helpBool": help,
+            "descBool": desc,
             ...req.body
         }
         objectsModel.updateObject(data, (err, upd)=>{

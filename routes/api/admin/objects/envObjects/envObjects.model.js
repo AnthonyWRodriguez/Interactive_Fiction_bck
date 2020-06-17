@@ -15,11 +15,7 @@ module.exports = (db) =>{
         objectPull: "",
         objectRead: "",
         objectOpen: "",
-        objectClose: "",
         objectClimb: "",
-        objectBurn: "",
-        objectShoot: "",
-        objectShatter: "",
         objectContents: {},
         objectInteracted: false,
         objectHelp: "",
@@ -27,11 +23,7 @@ module.exports = (db) =>{
         objectPullBool: false,
         objectReadBool: false,
         objectOpenBool: false,
-        objectCloseBool: false,
         objectClimbBool: false,
-        objectBurnBool: false,
-        objectShootBool: false,
-        objectShatterBool: false,
         objectHelpBool: false,
         objectDescBool: false,
     };
@@ -52,8 +44,8 @@ module.exports = (db) =>{
     };
 
     objectsModel.newObject = (data, handler)=>{
-        var {name, desc, push, pull, read, open, close, climb, burn, shoot, shatter, contentName, help, pushBool, 
-            pullBool, readBool, openBool, closeBool, climbBool, burnBool, shootBool, shatterBool, helpBool, descBool} = data;
+        var {name, desc, push, pull, read, open, climb, contentName, help, pushBool, 
+            pullBool, readBool, openBool, climbBool, helpBool, descBool} = data;
         objectsInvCollection.find({}).toArray((err, invs)=>{
             if(err){
                 console.log(err);
@@ -76,11 +68,7 @@ module.exports = (db) =>{
                     objectPull: pull,
                     objectRead: read,
                     objectOpen: open,
-                    objectClose: close,
                     objectClimb: climb,
-                    objectBurn: burn,
-                    objectShoot: shoot,
-                    objectShatter: shatter,
                     objectContents: content,
                     objectInteracted: false,
                     objectHelp: help,
@@ -88,11 +76,7 @@ module.exports = (db) =>{
                     objectPullBool: pullBool,
                     objectReadBool: readBool,
                     objectOpenBool: openBool,
-                    objectCloseBool: closeBool,
                     objectClimbBool: climbBool,
-                    objectBurnBool: burnBool,
-                    objectShootBool: shootBool,
-                    objectShatterBool: shatterBool,
                     objectHelpBool: helpBool,
                     objectDescBool: descBool,
                 }
@@ -108,8 +92,8 @@ module.exports = (db) =>{
     };
 
     objectsModel.updateObject = (data, handler)=>{
-        var {id, name, desc, push, pull, read, open, close, climb, burn, shoot, shatter, contentName, help, pushBool, 
-            pullBool, readBool, openBool, closeBool, climbBool, burnBool, shootBool, shatterBool, helpBool, descBool} = data;
+        var {id, name, desc, push, pull, read, open, climb, contentName, help, pushBool, 
+            pullBool, readBool, openBool, climbBool, helpBool, descBool} = data;
         objectsInvCollection.find({}).toArray((err, invs)=>{
             if(err){
                 console.log(err);
@@ -131,11 +115,7 @@ module.exports = (db) =>{
                     objectPull: pull,
                     objectRead: read,
                     objectOpen: open,
-                    objectClose: close,
                     objectClimb: climb,
-                    objectBurn: burn,
-                    objectShoot: shoot,
-                    objectShatter: shatter,
                     objectContents: content,
                     objectInteracted: false,
                     objectHelp: help,
@@ -143,11 +123,7 @@ module.exports = (db) =>{
                     objectPullBool: pullBool,
                     objectReadBool: readBool,
                     objectOpenBool: openBool,
-                    objectCloseBool: closeBool,
                     objectClimbBool: climbBool,
-                    objectBurnBool: burnBool,
-                    objectShootBool: shootBool,
-                    objectShatterBool: shatterBool,
                     objectHelpBool: helpBool,
                     objectDescBool: descBool,
                 }
